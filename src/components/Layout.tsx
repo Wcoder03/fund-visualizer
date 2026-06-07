@@ -53,18 +53,18 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`sidebar fixed inset-y-0 left-0 z-50 flex w-[220px] flex-col transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
+        className={`sidebar fixed inset-y-0 left-0 z-50 flex w-[200px] flex-col transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-4 pt-5 pb-4">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white shadow-sm shadow-blue-500/20">
+        <div className="flex items-center gap-2 px-4 pt-4 pb-3">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white shadow-sm shadow-blue-500/20">
             FA
           </span>
-          <div>
-            <span className="block text-[13px] font-semibold text-slate-900 leading-tight">基金分析台</span>
-            <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-slate-400 mt-px">Fund Analysis</span>
+          <div className="min-w-0">
+            <span className="block truncate text-[13px] font-semibold text-slate-900 leading-tight">基金分析台</span>
+            <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400 mt-px">Fund Analysis</span>
           </div>
         </div>
 
@@ -72,10 +72,10 @@ export default function Layout({ children }: LayoutProps) {
         <div className="mx-3 h-px bg-slate-100" />
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-2.5 pt-3 pb-2">
+        <nav className="flex-1 overflow-y-auto px-2 pt-2.5 pb-2">
           {navGroups.map((group, gi) => (
-            <div key={group.title} className={gi > 0 ? 'mt-[16px]' : ''}>
-              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+            <div key={group.title} className={gi > 0 ? 'mt-[14px]' : ''}>
+              <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400">
                 {group.title}
               </p>
               <div className="space-y-[2px]">
@@ -99,10 +99,10 @@ export default function Layout({ children }: LayoutProps) {
         </nav>
 
         {/* Bottom user card */}
-        <div className="px-2.5 pb-3">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+        <div className="px-2 pb-2.5">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 text-[10px] font-bold text-white shadow-sm shadow-blue-500/15">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 text-[10px] font-bold text-white shadow-sm shadow-blue-500/15">
                 U
               </div>
               <div className="min-w-0 flex-1">
