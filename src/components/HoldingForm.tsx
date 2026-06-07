@@ -98,7 +98,7 @@ export default function HoldingForm({ fundPool = [], onSave, editingHolding, onC
   };
 
   return (
-    <form onSubmit={save} className="research-panel rounded-2xl p-5">
+    <form onSubmit={save} className="ui-card p-5">
       <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">{editingHolding ? 'Edit Holding' : 'Add Holding'}</p>

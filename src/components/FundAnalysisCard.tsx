@@ -46,7 +46,7 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
   ].filter((item) => item.value > 0);
 
   return (
-    <article className="research-panel overflow-hidden rounded-2xl">
+    <article className="ui-card overflow-hidden">
       <header className="border-b border-slate-100 bg-white p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>

@@ -58,7 +58,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
   ];
 
   return (
-    <section className="rounded-xl border border-slate-200/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur-sm sm:px-5">
+    <section className="ui-card px-4 py-3.5 sm:px-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -80,24 +80,24 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
       </div>
 
       {/* Stats Grid */}
-      <div className="mt-2.5 grid grid-cols-2 gap-1.5 sm:gap-2 md:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`group rounded-lg px-3 py-2 transition-colors ${
+            className={`group rounded-xl px-3 py-2.5 transition-colors ${
               stat.accent
-                ? 'bg-slate-50/80 hover:bg-slate-100/80'
+                ? 'bg-slate-50 hover:bg-slate-100/80'
                 : 'hover:bg-slate-50/60'
             }`}
           >
             <p className="text-[11px] leading-tight text-slate-400">{stat.label}</p>
-            <div className="mt-0.5 text-[15px] font-semibold tracking-tight text-slate-900">{stat.value}</div>
+            <div className="mt-1 text-[15px] font-semibold tracking-tight text-slate-900">{stat.value}</div>
           </div>
         ))}
       </div>
 
       {/* Footer */}
-      <div className="mt-1.5 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-400">
+      <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-400">
         <span>更新：{lastUpdatedAt || '--'}</span>
         <span>{hasFallback ? '部分数据来自演示来源' : dailyRate !== null ? `今日收益率 ${formatRate(dailyRate)}` : ''}</span>
       </div>

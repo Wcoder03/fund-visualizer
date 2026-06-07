@@ -41,7 +41,7 @@ export default function FundInputForm({ onAnalyze, analyzing = false }: FundInpu
   };
 
   return (
-    <form onSubmit={submit} className="research-panel rounded-2xl p-4 sm:p-5">
+    <form onSubmit={submit} className="ui-card p-4 sm:p-5">
       <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">Input Basket</p>

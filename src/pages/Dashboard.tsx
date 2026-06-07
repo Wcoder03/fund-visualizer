@@ -95,7 +95,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
         : '仓位较分散';
 
   return (
-    <section className="research-panel rounded-2xl p-5 sm:p-6">
+    <section className="ui-card p-5 sm:p-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Position Review</p>
@@ -231,57 +231,29 @@ export default function Dashboard() {
   }, [analysis, fundInputs.length]);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-7 animate-fade-in">
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
-        <div className="research-panel overflow-hidden rounded-2xl">
-          <div className="p-6 sm:p-8">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 ring-1 ring-blue-100">
-                Portfolio Driven
-              </span>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                我的持仓 · 自动分析
-              </span>
-            </div>
-            <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl">
-              基金趋势分析工作台
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-              分析范围自动跟随“我的持仓”。持仓中有多少只基金，这里就分析多少只基金，并结合持仓金额生成组合层面的持仓分析。
+    <div className=”space-y-5 animate-fade-in”>
+      {/* Hero Banner */}
+      <section className=”relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a8f] via-[#2546a8] to-[#3b5ccc] p-6 text-white shadow-lg shadow-blue-600/15 lg:p-8”>
+        <div className=”pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5 blur-2xl” />
+        <div className=”pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10 blur-2xl” />
+        <div className=”pointer-events-none absolute right-8 top-6 hidden h-28 w-28 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm lg:block” />
+
+        <div className=”relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between”>
+          <div>
+            <p className=”text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-200/80”>Analysis Workbench</p>
+            <h1 className=”mt-2 text-2xl font-bold tracking-tight sm:text-3xl”>基金趋势分析工作台</h1>
+            <p className=”mt-2 max-w-xl text-sm leading-6 text-blue-100/80”>
+              分析范围自动跟随”我的持仓”，结合持仓金额生成组合层面的趋势分析与横向比较。
             </p>
-
-            <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              {headlineStats.map((stat) => (
-                <div key={stat.label} className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
-                  <p className="text-xs font-medium text-slate-500">{stat.label}</p>
-                  <p className="mt-1 text-2xl font-semibold text-slate-950">{stat.value}</p>
-                </div>
-              ))}
-            </div>
           </div>
-          <div className="border-t border-slate-200 bg-slate-50/80 px-6 py-4 sm:px-8">
-            <p className="text-sm text-slate-600">本工具用于辅助基金研究，不构成投资建议。</p>
-          </div>
-        </div>
-
-        <div className="info-surface rounded-2xl p-5">
-          <div className="flex items-center justify-between border-b border-blue-100 pb-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Research Pipeline</p>
-              <p className="mt-1 text-lg font-semibold text-slate-950">持仓驱动分析流程</p>
-            </div>
-            <span className="rounded-lg bg-blue-100 px-2 py-1 font-mono text-xs font-semibold text-blue-700">v2.2</span>
-          </div>
-          <ol className="mt-5 grid gap-2">
-            {['读取我的持仓', '按基金代码去重', '生成单基金分析', '汇总持仓金额', '计算收益与仓位占比', '输出组合提示', '生成多基金横向比较'].map((item, index) => (
-              <li key={item} className="grid grid-cols-[32px_minmax(0,1fr)] items-center gap-3 rounded-xl border border-blue-100 bg-white px-3 py-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 font-mono text-xs font-semibold text-blue-700">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <span className="text-sm text-slate-700">{item}</span>
-              </li>
+          <div className=”flex gap-3”>
+            {headlineStats.map((stat) => (
+              <div key={stat.label} className=”rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 backdrop-blur-sm”>
+                <p className=”text-[10px] font-medium text-blue-200/70”>{stat.label}</p>
+                <p className=”mt-0.5 text-lg font-bold text-white”>{stat.value}</p>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
       </section>
 
@@ -294,7 +266,7 @@ export default function Dashboard() {
       )}
 
       {(loading || snapshotsLoading) && (
-        <section className="research-panel rounded-2xl p-6">
+        <section className="ui-card p-6">
           <div className="flex items-center gap-4">
             <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-100 border-t-blue-600" />
             <div>

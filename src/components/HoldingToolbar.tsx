@@ -32,7 +32,7 @@ export default function HoldingToolbar({
   onSortChange,
 }: HoldingToolbarProps) {
   return (
-    <section className="research-panel rounded-2xl p-4">
+    <section className="ui-card p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
           <button onClick={onAdd} className="ui-button-primary rounded-xl px-4 py-2 text-sm font-semibold">添加持仓</button>
