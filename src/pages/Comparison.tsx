@@ -60,44 +60,8 @@ export default function Comparison() {
     );
   }
 
-  const hasFallback = Object.values(snapshotsByFundCode).some((snapshot) => snapshot.dataSource === 'mock' || snapshot.dataStatus === 'fallback');
-
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b1f4d] via-[#122d6b] to-[#1a3f8a] p-6 text-white shadow-lg shadow-blue-900/20 lg:px-8 lg:py-7">
-        {/* Decorative: grid pattern */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{backgroundImage:'repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 40px)'}} />
-        {/* Decorative: blurred orbs */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px]" />
-        <div className="pointer-events-none absolute -bottom-16 left-1/3 h-48 w-48 rounded-full bg-indigo-400/8 blur-[60px]" />
-
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          {/* Left: text */}
-          <div className="max-w-lg">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300/60">Portfolio & DCA</p>
-            <h1 className="mt-1.5 text-[26px] font-bold tracking-tight text-white/95 sm:text-[32px]">我的持仓</h1>
-            <p className="mt-2 text-[13px] leading-[1.7] text-blue-100/50">
-              基于持仓金额、持有收益和基金净值数据计算当前市值、当日收益与定投摘要。
-            </p>
-          </div>
-
-          {/* Right: glass stat cards */}
-          <div className="flex gap-2.5">
-            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
-              <p className="text-[10px] font-medium text-blue-200/40">基金数量</p>
-              <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">{holdings.length}</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
-              <p className="text-[10px] font-medium text-blue-200/40">定投计划</p>
-              <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">
-                {holdings.filter(h => h.dcaPlan?.enabled && h.dcaPlan.status !== 'paused').length}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Holdings Section */}
       <PortfolioHoldingsPageSection
         holdings={holdings}
