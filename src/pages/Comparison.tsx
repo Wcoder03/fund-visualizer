@@ -41,24 +41,8 @@ export default function Comparison() {
     setHoldings((current) => current.filter((item) => item.id !== id));
   };
 
-  if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-100 border-t-blue-600" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="ui-card mx-auto max-w-2xl p-8 text-center">
-        <p className="font-semibold text-red-600">{error}</p>
-        <button onClick={loadFunds} className="ui-button-primary mt-4 px-5 py-2.5 text-sm font-semibold">
-          重试加载基金池
-        </button>
-      </div>
-    );
-  }
+  // Don't block the page on fundPool loading — it's only used for autocomplete
+  // Show page immediately with localStorage holdings
 
   return (
     <div className="space-y-5 animate-fade-in">
