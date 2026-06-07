@@ -37,9 +37,24 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+const pageTitleMap: Record<string, { label: string; sub: string }> = {
+  '/': { label: '我的持仓', sub: 'Portfolio' },
+  '/fund-advisor': { label: '选基分析', sub: 'Fund Advisor' },
+  '/analysis': { label: '持仓分析', sub: 'Position Analysis' },
+};
+
+function getCurrentPageTitle(pathname: string): { label: string; sub: string } {
+  if (pageTitleMap[pathname]) return pageTitleMap[pathname];
+  if (pathname.startsWith('/fund/')) return { label: '基金详情', sub: 'Fund Detail' };
+  return { label: '基金分析台', sub: 'Fund Analysis' };
+}
+
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pageTitle = getCurrentPageTitle(location.pathname);
+  const now = new Date();
+  const updateTime = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f5f7fb]">
@@ -127,27 +142,64 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main content area */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-[52px] items-center justify-between border-b border-slate-200/60 bg-white/80 px-5 backdrop-blur-lg lg:px-7">
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 lg:hidden"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-            </svg>
-          </button>
-
-          <div className="flex-1" />
-
-          {/* Right actions */}
+        <header className="sticky top-0 z-30 flex h-[64px] items-center justify-between border-b border-slate-200/60 bg-white/90 px-5 backdrop-blur-lg lg:px-7">
+          {/* Left: page context */}
           <div className="flex items-center gap-3">
-            <span className="text-[12px] font-medium text-slate-400">
-              {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 lg:hidden"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+            <div className="hidden sm:block">
+              <p className="text-[15px] font-semibold text-slate-800">{pageTitle.label}</p>
+              <p className="text-[11px] font-medium text-slate-400">{pageTitle.sub}</p>
+            </div>
+          </div>
+
+          {/* Right: status + actions + user */}
+          <div className="flex items-center gap-3">
+            {/* Sync status */}
+            <div className="hidden items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 md:flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/40" />
+              <span className="text-[12px] font-medium text-emerald-700">数据已同步</span>
+            </div>
+
+            {/* Update time */}
+            <span className="hidden text-[12px] text-slate-400 lg:block">更新于 {updateTime}</span>
+
+            {/* Refresh button */}
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 text-[12px] font-medium text-slate-500 transition-colors hover:border-blue-300 hover:text-blue-600"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
+              </svg>
+              <span className="hidden sm:inline">刷新</span>
+            </button>
+
+            {/* Divider */}
+            <div className="h-5 w-px bg-slate-200/80" />
+
+            {/* Date */}
+            <span className="hidden text-[12px] font-medium text-slate-400 xl:block">
+              {now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
-            <div className="h-4 w-px bg-slate-200" />
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-[10px] font-bold text-white shadow-sm shadow-blue-500/20">
+
+            {/* Notification bell */}
+            <button type="button" className="relative flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
+              <svg className="h-[18px] w-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.7}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+            </button>
+
+            {/* User avatar */}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-[11px] font-bold text-white shadow-sm shadow-blue-500/20">
               U
             </div>
           </div>
