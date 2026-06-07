@@ -68,13 +68,13 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`sidebar fixed inset-y-0 left-0 z-50 flex w-[228px] flex-col transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
+        className={`sidebar fixed inset-y-0 left-0 z-50 flex w-[220px] flex-col transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-5 pt-[22px] pb-[18px]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[11px] font-bold text-white shadow-md shadow-blue-600/25">
+        <div className="flex items-center gap-2.5 px-4 pt-5 pb-4">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white shadow-md shadow-blue-600/25">
             FA
           </span>
           <div>
@@ -84,16 +84,16 @@ export default function Layout({ children }: LayoutProps) {
         </div>
 
         {/* Divider */}
-        <div className="mx-4 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+        <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 pt-3 pb-2">
+        <nav className="flex-1 overflow-y-auto px-2.5 pt-3 pb-2">
           {navGroups.map((group, gi) => (
-            <div key={group.title} className={gi > 0 ? 'mt-[18px]' : ''}>
+            <div key={group.title} className={gi > 0 ? 'mt-[16px]' : ''}>
               <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/[0.28]">
                 {group.title}
               </p>
-              <div className="space-y-[3px]">
+              <div className="space-y-[2px]">
                 {group.items.map((item) => {
                   const isActive = item.path ? location.pathname === item.path : false;
                   const Wrapper = item.path && !item.disabled ? Link : 'div';
@@ -105,11 +105,6 @@ export default function Layout({ children }: LayoutProps) {
                     >
                       {item.icon}
                       <span>{item.label}</span>
-                      {item.disabled && (
-                        <span className="ml-auto rounded-full bg-white/[0.06] px-1.5 py-px text-[9px] font-medium text-white/20">
-                          即将推出
-                        </span>
-                      )}
                     </Wrapper>
                   );
                 })}
@@ -119,10 +114,10 @@ export default function Layout({ children }: LayoutProps) {
         </nav>
 
         {/* Bottom user card */}
-        <div className="px-3 pb-3">
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] p-3">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500/30 to-indigo-500/30 text-[11px] font-bold text-blue-200/80">
+        <div className="px-2.5 pb-3">
+          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/30 to-indigo-500/30 text-[10px] font-bold text-blue-200/80">
                 U
               </div>
               <div className="min-w-0 flex-1">
@@ -130,10 +125,6 @@ export default function Layout({ children }: LayoutProps) {
                 <p className="text-[10px] text-white/25">Fund Analyst</p>
               </div>
               <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/40" />
-            </div>
-            <div className="mt-2.5 flex items-center justify-between border-t border-white/[0.05] pt-2">
-              <span className="text-[9px] font-medium text-white/15">v2.2</span>
-              <span className="text-[9px] font-medium text-white/15">东方财富数据</span>
             </div>
           </div>
         </div>
