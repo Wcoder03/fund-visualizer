@@ -148,7 +148,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
                     <p className="mt-0.5 text-[13px] font-medium text-slate-400 tabular-nums">{row.code}</p>
                   </td>
                   <td className="px-4 py-3 text-right align-middle text-[15px] font-bold text-slate-900 tabular-nums">{formatMoney(row.amount)}</td>
-                  <td className="px-4 py-3 text-right align-middle text-[14px] font-medium text-slate-600 tabular-nums">{formatRate(row.weight)}</td>
+                  <td className="px-4 py-3 text-right align-middle text-[15px] font-bold text-slate-900 tabular-nums">{formatRate(row.weight)}</td>
                   <td className="px-4 py-3 text-right align-middle">
                     <p className={`text-[15px] font-bold tabular-nums ${row.profit >= 0 ? 'text-red-600' : 'text-green-600'}`}>{formatMoney(row.profit, true)}</p>
                     <p className="mt-0.5 text-[12px] font-medium tabular-nums text-slate-400">{formatRate(row.profitRate, true)}</p>
