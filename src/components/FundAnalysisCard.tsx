@@ -56,7 +56,7 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[13px] font-semibold text-slate-500">{data.code}</span>
+              <span className="text-[14px] font-medium text-slate-500 tabular-nums">{data.code}</span>
               <RiskBadge level={data.riskLevel} />
               <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-600 ring-1 ring-blue-200/60">{data.type}</span>
             </div>

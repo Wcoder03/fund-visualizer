@@ -23,7 +23,7 @@ export default function History() {
                 className="flex items-center justify-between p-4 bg-slate-50 rounded-lg"
               >
                 <div>
-                  <span className="font-mono text-sm text-blue-600">
+                  <span className="text-[14px] font-medium text-slate-500 tabular-nums">
                     {fund.basicInfo.code}
                   </span>
                   <span className="ml-3 text-sm text-slate-900">{fund.basicInfo.name}</span>

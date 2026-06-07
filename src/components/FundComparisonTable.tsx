@@ -50,7 +50,7 @@ export default function FundComparisonTable({ comparison }: FundComparisonTableP
           <tbody className="divide-y divide-slate-100">
             {comparison.rows.map((row) => (
               <tr key={row.code} className="align-top transition-colors hover:bg-blue-50/35">
-                <td className="break-words px-2 py-3 font-mono font-semibold text-slate-900">{row.code}</td>
+                <td className="break-words px-2 py-3 text-[14px] font-medium text-slate-500 tabular-nums">{row.code}</td>
                 <td className="break-words px-2 py-3 text-slate-900">{row.name}</td>
                 <td className="break-words px-2 py-3 text-slate-600">{row.fundType}</td>
                 <td className="break-words px-2 py-3 text-slate-600">{row.direction}</td>
@@ -72,7 +72,7 @@ export default function FundComparisonTable({ comparison }: FundComparisonTableP
           <div key={ranking.title} className="ui-card card-hover rounded-2xl p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{ranking.title}</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="font-mono text-sm font-semibold text-slate-500">{ranking.code}</span>
+              <span className="text-[14px] font-medium text-slate-500 tabular-nums">{ranking.code}</span>
               <span className="font-semibold text-slate-950">{ranking.name}</span>
             </div>
             <p className="mt-2 text-sm leading-6 text-slate-600">{ranking.reason}</p>

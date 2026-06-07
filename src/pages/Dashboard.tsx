@@ -146,7 +146,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
                 <tr key={row.id} className="hover:bg-blue-50/35">
                   <td className="px-4 py-3">
                     <p className="truncate font-semibold text-slate-950">{row.name}</p>
-                    <p className="mt-1 font-mono text-xs text-slate-500">{row.code}</p>
+                    <p className="mt-1 text-[13px] font-medium text-slate-500 tabular-nums">{row.code}</p>
                   </td>
                   <td className="px-4 py-3 text-right font-semibold text-slate-950">{formatMoney(row.amount)}</td>
                   <td className="px-4 py-3 text-right text-slate-600">{formatRate(row.weight)}</td>
