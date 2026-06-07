@@ -45,7 +45,7 @@ interface RowModel {
 
 const columns: Array<{ field?: SortField; label: string; align?: 'left' | 'right' | 'center' }> = [
   { field: 'fundName', label: '基金', align: 'left' },
-  { field: 'marketValue', label: '当前市值', align: 'right' },
+  { field: 'marketValue', label: '当前金额', align: 'right' },
   { label: '成本金额', align: 'right' },
   { label: '当前净值', align: 'right' },
   { field: 'dailyProfitLoss', label: '当日收益', align: 'right' },
@@ -347,7 +347,7 @@ export default function PortfolioHoldingsTable({
                       <button type="button" onClick={() => onDelete(row.holding.id)} className="whitespace-nowrap font-medium hover:text-red-500 transition-colors">删除</button>
                     </div>
                   </td>
-                  {/* 当前市值 */}
+                  {/* 当前金额 */}
                   <td className="px-3 py-3 text-right align-middle">
                     <div className="flex flex-col gap-[3px]">
                       <span className="whitespace-nowrap text-[15px] font-bold text-slate-900 leading-5 tabular-nums">{formatMoney(row.profit.marketValue)}</span>

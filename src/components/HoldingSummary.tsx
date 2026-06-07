@@ -58,7 +58,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
 
   // 总持仓成本 — receipt/账单
   const iconCost = <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.7}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>;
-  // 当前总市值 — coins/硬币
+  // 当前总金额 — coins/硬币
   const iconValue = <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.7}><path strokeLinecap="round" strokeLinejoin="round" d="M14.121 7.629A3 3 0 009.017 9.43c.023.212-.014.425-.092.623l-.376.876M14.121 7.629a3 3 0 01.092 3.21M14.121 7.629l2.847-2.847M9.017 9.43l-2.847 2.847m0 0a3 3 0 004.243 4.243m-4.243-4.243l2.847 2.847M12 21a9 9 0 100-18 9 9 0 000 18z" /></svg>;
   // 持有收益 — 趋势上升折线
   const iconProfit = <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.7}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>;
@@ -77,7 +77,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
 
   const stats: StatItem[] = [
     { label: '总持仓成本', value: formatMoney(totalCost) || emptyVal, icon: iconCost, color: 'from-blue-500 to-blue-600' },
-    { label: '当前总市值', value: formatMoney(totalValue) || emptyVal, icon: iconValue, color: 'from-indigo-500 to-indigo-600' },
+    { label: '当前总金额', value: formatMoney(totalValue) || emptyVal, icon: iconValue, color: 'from-indigo-500 to-indigo-600' },
     { label: '持有收益', value: totalProfit !== null ? <ProfitLossValue value={totalProfit} type="money" /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
     { label: '持有收益率', value: totalRate !== null ? <ProfitLossValue value={totalRate} type="rate" /> : emptyVal, icon: iconRate, accent: true, color: 'from-pink-500 to-pink-600' },
     { label: '今日收益', value: dailyProfit !== null ? <ProfitLossValue value={dailyProfit} type="money" /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },

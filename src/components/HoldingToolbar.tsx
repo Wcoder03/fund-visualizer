@@ -12,7 +12,7 @@ interface HoldingToolbarProps {
 }
 
 const sortOptions: Array<{ value: SortField; label: string }> = [
-  { value: 'marketValue', label: '当前市值' },
+  { value: 'marketValue', label: '当前金额' },
   { value: 'dailyProfitLoss', label: '当日收益' },
   { value: 'dailyProfitLossRate', label: '当日收益率' },
   { value: 'totalProfitLoss', label: '持有收益' },

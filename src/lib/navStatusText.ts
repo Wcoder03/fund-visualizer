@@ -13,7 +13,7 @@ export function navStatusLabel(status?: MarketStatus): string {
 }
 
 export function navStatusNote(status?: MarketStatus): string {
-  if (!status) return '暂无可用净值快照，无法计算市值和收益。';
+  if (!status) return '暂无可用净值快照，无法计算金额和收益。';
   const notes: Record<MarketStatus, string> = {
     before_open: '盘前使用最近确认净值，当日收益显示为 --。',
     trading: '盘中使用估算净值，最终以确认净值为准。',
