@@ -47,6 +47,7 @@ export interface FundAnalysisResult {
     label: string;
     value: string;
     highlight?: boolean;
+    lowlight?: boolean;
   }[];
 
   // 与持仓关系
@@ -302,10 +303,13 @@ export function analyzeFund(
   const portfolioRelation = analyzePortfolioRelation(snapshot, holdings);
   const recommendation = generateRecommendation(scoreResult.total);
 
+  const dailyChangeStr = dailyChange !== undefined
+    ? `${dailyChange > 0 ? '+' : ''}${(dailyChange * 100).toFixed(2)}%`
+    : '暂无数据';
+
   const keyMetrics: FundAnalysisResult['keyMetrics'] = [
-    { label: '当前净值', value: nav ? nav.toFixed(4) : '暂无数据', highlight: true },
-    { label: '前日净值', value: snapshot.previousNav ? snapshot.previousNav.toFixed(4) : '暂无数据' },
-    { label: '日涨跌幅', value: dailyChange !== undefined ? `${(dailyChange * 100).toFixed(2)}%` : '暂无数据', highlight: dailyChange !== undefined && Math.abs(dailyChange) > 0.02 },
+    { label: '当前净值', value: nav ? nav.toFixed(4) : '暂无数据' },
+    { label: '日涨跌幅', value: dailyChangeStr, highlight: dailyChange !== undefined && dailyChange > 0, lowlight: dailyChange !== undefined && dailyChange < 0 },
     { label: '净值日期', value: snapshot.navDate || '暂无数据' },
     { label: '基金类型', value: fundType },
     { label: '风险等级', value: riskLevel },

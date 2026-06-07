@@ -212,11 +212,11 @@ export default function FundAdvisor() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {analysis.keyMetrics.map(m => (
                   <div key={m.label} className="rounded-lg bg-slate-50 px-3 py-2">
                     <p className="text-[11px] text-slate-400">{m.label}</p>
-                    <p className={`mt-0.5 text-[14px] font-bold tabular-nums ${m.highlight ? 'text-rose-600' : 'text-slate-800'}`}>{m.value}</p>
+                    <p className={`mt-0.5 text-[14px] font-bold tabular-nums ${m.highlight ? 'text-red-600' : m.lowlight ? 'text-green-600' : 'text-slate-800'}`}>{m.value}</p>
                   </div>
                 ))}
               </div>
