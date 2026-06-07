@@ -1,0 +1,368 @@
+import { useCallback, useState } from 'react';
+import type { FundSearchResult } from '../types/fund';
+import type { PortfolioHolding } from '../types/portfolio';
+import { analyzeFund, type FundAnalysisResult } from '../lib/fundAdvisorService';
+import type { FundNavSnapshot } from '../types/portfolio';
+import { loadPortfolioFromStorage, savePortfolioToStorage } from '../lib/portfolioStorage';
+import { formatMoney } from '../lib/portfolioFormatters';
+
+export default function FundAdvisor() {
+  const [keyword, setKeyword] = useState('');
+  const [candidates, setCandidates] = useState<FundSearchResult[]>([]);
+  const [analysis, setAnalysis] = useState<FundAnalysisResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searched, setSearched] = useState(false);
+  const [holdings, setHoldings] = useState<PortfolioHolding[]>(() => loadPortfolioFromStorage());
+
+  const doSearch = useCallback(async () => {
+    const q = keyword.trim();
+    if (!q) return;
+    setLoading(true);
+    setError(null);
+    setSearched(true);
+    setAnalysis(null);
+    setCandidates([]);
+    try {
+      const resp = await fetch(`/api/funds/search?keyword=${encodeURIComponent(q)}`);
+      if (!resp.ok) throw new Error(`请求失败: ${resp.status}`);
+      const data = (await resp.json()) as { items: FundSearchResult[] };
+      const items = data.items ?? [];
+      if (items.length === 1) {
+        await analyzeFundByCode(items[0].fundCode, items[0].fundName);
+      } else {
+        setCandidates(items);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '搜索失败，请重试');
+    } finally {
+      setLoading(false);
+    }
+  }, [keyword]);
+
+  const analyzeFundByCode = async (code: string, name?: string) => {
+    setLoading(true);
+    setError(null);
+    setCandidates([]);
+    try {
+      const resp = await fetch(`/api/funds/${code}/snapshot`);
+      if (!resp.ok) throw new Error(`获取基金数据失败: ${resp.status}`);
+      const snapshot = (await resp.json()) as FundNavSnapshot;
+      if (name && !snapshot.fundName) snapshot.fundName = name;
+      const result = analyzeFund(snapshot, holdings);
+      setAnalysis(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '分析失败，请重试');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') void doSearch();
+  };
+
+  const addToPortfolio = () => {
+    if (!analysis) return;
+    const code = analysis.overview.fundCode;
+    const existing = holdings.find(h => h.fundCode === code);
+    if (existing) return;
+    const newHolding: PortfolioHolding = {
+      id: `holding-${code}-${Date.now()}`,
+      fundCode: code,
+      fundName: analysis.overview.fundName,
+      holdingAmount: 0,
+      costAmount: 0,
+      firstBuyDate: new Date().toISOString().slice(0, 10),
+      holdingDays: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const updated = [newHolding, ...holdings];
+    setHoldings(updated);
+    savePortfolioToStorage(updated);
+  };
+
+  const conclusionColor = analysis?.recommendation.conclusion === '值得关注'
+    ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
+    : analysis?.recommendation.conclusion === '谨慎观察'
+      ? 'bg-amber-50 text-amber-700 ring-amber-200'
+      : analysis?.recommendation.conclusion === '暂不建议买入'
+        ? 'bg-red-50 text-red-600 ring-red-200'
+        : 'bg-slate-50 text-slate-600 ring-slate-200';
+
+  return (
+    <div className="space-y-5 animate-fade-in">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b1f4d] via-[#122d6b] to-[#1a3f8a] p-6 text-white shadow-lg shadow-blue-900/20 lg:px-8 lg:py-7">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{backgroundImage:'repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 40px)'}} />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px]" />
+        <div className="relative">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300/60">Fund Advisor</p>
+          <h1 className="mt-1.5 text-[26px] font-bold tracking-tight text-white/95 sm:text-[32px]">选基分析</h1>
+          <p className="mt-2 max-w-xl text-[13px] leading-[1.7] text-blue-100/50">
+            输入基金代码或名称，查看基金基本资料、收益表现、风险特征、优缺点分析和买入参考结论。
+          </p>
+        </div>
+      </section>
+
+      {/* Search */}
+      <section className="ui-card p-5">
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <svg className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <input
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="请输入基金代码或基金名称，例如 008254、华宝致远"
+              className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-11 pr-4 text-[14px] text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-blue-300 focus:shadow-blue-50 focus:outline-none"
+            />
+          </div>
+          <button
+            onClick={doSearch}
+            disabled={loading || !keyword.trim()}
+            className="ui-button-primary flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            ) : (
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+              </svg>
+            )}
+            开始分析
+          </button>
+        </div>
+      </section>
+
+      {/* Error */}
+      {error && (
+        <section className="ui-card border-red-100 bg-red-50/50 p-5 text-center">
+          <p className="text-[13px] text-red-600">{error}</p>
+        </section>
+      )}
+
+      {/* Empty state */}
+      {!loading && !searched && !analysis && (
+        <section className="ui-card p-8 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
+            <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+            </svg>
+          </div>
+          <p className="mt-4 text-[15px] font-semibold text-slate-700">输入基金，开始分析</p>
+          <p className="mt-1 text-[13px] text-slate-400">支持基金代码、名称、关键词搜索</p>
+          <div className="mt-5 flex flex-wrap justify-center gap-2">
+            {['基础资料', '收益表现', '风险评估', '优缺点分析', '买入参考'].map(tag => (
+              <span key={tag} className="rounded-full bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-500 ring-1 ring-slate-200/60">{tag}</span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Candidate list */}
+      {!loading && candidates.length > 1 && (
+        <section className="ui-card overflow-hidden">
+          <div className="border-b border-slate-100 px-5 py-3">
+            <span className="text-[13px] font-medium text-slate-500">找到 {candidates.length} 只基金，请选择一只进行分析</span>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {candidates.map(fund => (
+              <button
+                key={fund.fundCode}
+                type="button"
+                onClick={() => analyzeFundByCode(fund.fundCode, fund.fundName)}
+                className="flex w-full items-center justify-between px-5 py-3.5 text-left transition-colors hover:bg-slate-50/60"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-[11px] font-bold text-blue-600">
+                    {fund.fundCode.slice(0, 2)}
+                  </span>
+                  <div>
+                    <p className="text-[13px] font-medium text-slate-800">{fund.fundName}</p>
+                    <p className="mt-px text-[11px] text-slate-400">{fund.fundCode} · {fund.fundType}</p>
+                  </div>
+                </div>
+                <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* No results */}
+      {!loading && searched && candidates.length === 0 && !analysis && !error && (
+        <section className="ui-card p-10 text-center">
+          <p className="text-[14px] font-medium text-slate-500">未找到匹配的基金</p>
+          <p className="mt-1 text-[12px] text-slate-400">请尝试其他关键词或基金代码</p>
+        </section>
+      )}
+
+      {/* Analysis Report */}
+      {analysis && (
+        <div className="space-y-4">
+          {/* Overview + Score + Recommendation */}
+          <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+            {/* Overview */}
+            <section className="ui-card p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Fund Overview</p>
+                  <h2 className="mt-1 text-[18px] font-bold text-slate-900">{analysis.overview.fundName}</h2>
+                  <p className="mt-0.5 text-[13px] text-slate-400">{analysis.overview.fundCode} · {analysis.overview.fundType}</p>
+                </div>
+                <div className="flex gap-2">
+                  {analysis.overview.isInPortfolio ? (
+                    <span className="inline-flex h-8 items-center whitespace-nowrap rounded-lg bg-emerald-50 px-3 text-[12px] font-medium text-emerald-600 ring-1 ring-emerald-200/60">已在持仓</span>
+                  ) : (
+                    <button type="button" onClick={addToPortfolio} className="ui-button-primary h-8 whitespace-nowrap rounded-lg px-3 text-[12px] font-medium">
+                      加入持仓
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {analysis.keyMetrics.map(m => (
+                  <div key={m.label} className="rounded-lg bg-slate-50 px-3 py-2">
+                    <p className="text-[11px] text-slate-400">{m.label}</p>
+                    <p className={`mt-0.5 text-[14px] font-bold tabular-nums ${m.highlight ? 'text-rose-600' : 'text-slate-800'}`}>{m.value}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Score + Recommendation */}
+            <section className="ui-card flex flex-col p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Score</p>
+              <div className="mt-2 flex flex-1 flex-col items-center justify-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
+                  <span className="text-[28px] font-bold text-white tabular-nums">{analysis.score.total}</span>
+                </div>
+                <p className="mt-2 text-[14px] font-semibold text-slate-700">{analysis.score.level}</p>
+              </div>
+              <div className={`mt-3 rounded-lg px-3 py-2 text-center text-[12px] font-semibold ring-1 ${conclusionColor}`}>
+                {analysis.recommendation.conclusion}
+              </div>
+            </section>
+          </div>
+
+          {/* Recommendation summary */}
+          <section className="ui-card p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Buy Reference</p>
+            <p className="mt-2 text-[14px] leading-[1.7] text-slate-700">{analysis.recommendation.summary}</p>
+          </section>
+
+          {/* Pros & Cons */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="ui-card p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-500">Advantages</p>
+              <h3 className="mt-1 text-[15px] font-semibold text-slate-800">优点分析</h3>
+              <ul className="mt-3 space-y-2">
+                {analysis.pros.map((pro, i) => (
+                  <li key={i} className="flex items-start gap-2 text-[13px] leading-[1.6] text-slate-600">
+                    <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[10px] text-emerald-600">✓</span>
+                    {pro}
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="ui-card p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-500">Risks</p>
+              <h3 className="mt-1 text-[15px] font-semibold text-slate-800">缺点与风险</h3>
+              <ul className="mt-3 space-y-2">
+                {analysis.cons.map((con, i) => (
+                  <li key={i} className="flex items-start gap-2 text-[13px] leading-[1.6] text-slate-600">
+                    <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-amber-100 text-[10px] text-amber-600">!</span>
+                    {con}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          {/* Suitability */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="ui-card p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-500">Suitable For</p>
+              <h3 className="mt-1 text-[15px] font-semibold text-slate-800">适合人群</h3>
+              <ul className="mt-3 space-y-1.5">
+                {analysis.suitableFor.map((s, i) => (
+                  <li key={i} className="flex items-center gap-2 text-[13px] text-slate-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="ui-card p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-red-400">Not Suitable For</p>
+              <h3 className="mt-1 text-[15px] font-semibold text-slate-800">不适合人群</h3>
+              <ul className="mt-3 space-y-1.5">
+                {analysis.notSuitableFor.map((s, i) => (
+                  <li key={i} className="flex items-center gap-2 text-[13px] text-slate-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          {/* Score dimensions */}
+          <section className="ui-card p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Score Breakdown</p>
+            <h3 className="mt-1 text-[15px] font-semibold text-slate-800">评分维度</h3>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {analysis.score.dimensions.map(d => (
+                <div key={d.name} className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[13px] font-bold text-slate-700 shadow-sm tabular-nums">{d.score}</div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[13px] font-medium text-slate-700">{d.name}</p>
+                    <p className="text-[11px] text-slate-400">{d.comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Portfolio relation */}
+          <section className="ui-card p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Portfolio Relation</p>
+            <h3 className="mt-1 text-[15px] font-semibold text-slate-800">与我的持仓关系</h3>
+            <div className="mt-3 space-y-2 text-[13px] leading-[1.7] text-slate-600">
+              {analysis.portfolioRelation.alreadyHeld ? (
+                <p className="flex items-center gap-2">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-[10px] text-emerald-600">✓</span>
+                  {analysis.portfolioRelation.holdingInfo}
+                </p>
+              ) : (
+                <p>该基金尚未加入持仓。</p>
+              )}
+              <p>{analysis.portfolioRelation.complementarity}</p>
+              {analysis.portfolioRelation.duplicateWarning && (
+                <p className="flex items-center gap-2 text-amber-600">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-[10px]">!</span>
+                  {analysis.portfolioRelation.duplicateWarning}
+                </p>
+              )}
+            </div>
+          </section>
+
+          {/* Disclaimer */}
+          <section className="rounded-xl border border-amber-200/60 bg-amber-50/50 px-5 py-3">
+            <p className="text-[12px] leading-[1.6] text-amber-700">
+              以上分析基于当前可用数据自动生成，仅供参考，不构成投资建议。基金有风险，投资需谨慎。
+            </p>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
