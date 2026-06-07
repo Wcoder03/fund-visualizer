@@ -182,6 +182,68 @@ const SAMPLE_PROFILES: FundProfile[] = [
   },
 ];
 
+function inferCompany(name: string): string {
+  const companies: [string, string][] = [
+    ['华泰柏瑞', '华泰柏瑞基金'],
+    ['华宝', '华宝基金'],
+    ['广发', '广发基金'],
+    ['易方达', '易方达基金'],
+    ['长城', '长城基金'],
+    ['南方', '南方基金'],
+    ['华夏', '华夏基金'],
+    ['嘉实', '嘉实基金'],
+    ['博时', '博时基金'],
+    ['招商', '招商基金'],
+    ['富国', '富国基金'],
+    ['汇添富', '汇添富基金'],
+    ['中欧', '中欧基金'],
+    ['景顺长城', '景顺长城基金'],
+    ['工银瑞信', '工银瑞信基金'],
+    ['鹏华', '鹏华基金'],
+    ['天弘', '天弘基金'],
+    ['交银', '交银施罗德基金'],
+    ['兴证全球', '兴证全球基金'],
+    ['中银', '中银基金'],
+    ['建信', '建信基金'],
+    ['银华', '银华基金'],
+    ['国泰', '国泰基金'],
+    ['大成', '大成基金'],
+    ['诺安', '诺安基金'],
+  ];
+  for (const [keyword, company] of companies) {
+    if (name.includes(keyword)) return company;
+  }
+  return '基金公司信息待更新';
+}
+
+function inferDirection(name: string, type: string): string {
+  const keywords: [string, string][] = [
+    ['电力', '电力公用事业'],
+    ['新能源', '新能源产业链'],
+    ['纳斯达克', '纳斯达克100宽基指数'],
+    ['科技', '科技创新'],
+    ['医药', '医药健康'],
+    ['消费', '大消费'],
+    ['半导体', '半导体芯片'],
+    ['军工', '国防军工'],
+    ['白酒', '白酒消费'],
+    ['光伏', '光伏产业链'],
+    ['锂电', '锂电池产业链'],
+    ['AI', '人工智能'],
+    ['互联网', '互联网科技'],
+    ['全球成长', '全球成长精选'],
+    ['全球新能源', '全球新能源车'],
+    ['红利', '高股息红利'],
+  ];
+  for (const [keyword, direction] of keywords) {
+    if (name.includes(keyword)) return direction;
+  }
+  if (type === 'QDII') return '海外资产配置';
+  if (type === '债券型') return '固定收益';
+  if (type === '货币型') return '现金管理';
+  return '均衡配置';
+}
+
 function fallbackProfile(input: FundInput, identification: TypeIdentification): FundProfile {
   const isBond = identification.fundType === '债券型';
   const isMoney = identification.fundType === '货币型';
@@ -190,15 +252,15 @@ function fallbackProfile(input: FundInput, identification: TypeIdentification): 
   return {
     code: input.code,
     name: input.name,
-    company: '示例基金公司',
-    manager: '示例基金经理',
+    company: inferCompany(input.name),
+    manager: '基金经理信息待更新',
     inceptionDate: '2020-01-15',
     scale: '18.60亿元',
     type: identification.fundType,
     riskLevel: isMoney ? '低风险' : isBond ? '中低风险' : '中高风险',
     investmentScope: identification.investmentScope,
-    coreDirection: identification.coreDirection,
-    currentStyle: isBond ? '稳健久期、信用精选' : isMoney ? '高流动性、现金管理' : '均衡成长、分散配置',
+    coreDirection: inferDirection(input.name, identification.fundType),
+    currentStyle: isBond ? '稳健久期、信用精选' : isMoney ? '高流动性、现金管理' : identification.fundType === 'QDII' ? '全球配置、成长风格' : '均衡成长、分散配置',
     latestNav: isMoney ? 1 : 1.368,
     accumulatedNav: isMoney ? 1 : 1.728,
     return1m: baseReturn / 8,
