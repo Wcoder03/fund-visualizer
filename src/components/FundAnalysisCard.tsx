@@ -56,7 +56,7 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
               <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">{data.type}</span>
             </div>
             <h3 className="mt-2 text-xl font-semibold text-slate-950">{data.name}</h3>
-            <p className="mt-1 text-sm text-slate-500">{data.company} · {data.manager} · {data.coreDirection}</p>
+            <p className="mt-1 text-sm text-slate-500">{data.company} · {data.coreDirection}</p>
           </div>
           <div className="flex w-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 sm:w-auto sm:justify-start">
             <div className="min-w-20">
