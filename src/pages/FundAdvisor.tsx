@@ -93,38 +93,36 @@ export default function FundAdvisor() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Search */}
-      <section className="ui-card p-5">
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <svg className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-            <input
-              type="text"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="请输入基金代码或基金名称，例如 008254、华宝致远"
-              className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-11 pr-4 text-[14px] text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-blue-300 focus:shadow-blue-50 focus:outline-none"
-            />
-          </div>
-          <button
-            onClick={doSearch}
-            disabled={loading || !keyword.trim()}
-            className="ui-button-primary flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            ) : (
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h3m-3 3h3" />
-              </svg>
-            )}
-            开始分析
-          </button>
+      {/* Search bar */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <svg className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="请输入基金代码或基金名称，例如 008254、华宝致远"
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 text-[14px] text-slate-700 shadow-sm placeholder:text-slate-400 focus:border-blue-300 focus:shadow-blue-50 focus:outline-none"
+          />
         </div>
-      </section>
+        <button
+          onClick={doSearch}
+          disabled={loading || !keyword.trim()}
+          className="ui-button-primary flex h-12 shrink-0 items-center gap-2 rounded-xl px-5 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          ) : (
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h3m-3 3h3" />
+            </svg>
+          )}
+          开始分析
+        </button>
+      </div>
 
       {/* Error */}
       {error && (
