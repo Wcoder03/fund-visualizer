@@ -171,9 +171,9 @@ export const eastmoneyProvider: FundDataProvider = {
       return {
         fundCode: code,
         fundName,
-        fundType: '暂无数据',
-        fundCompany: '暂无数据',
-        fundManager: '暂无数据',
+        fundType: '',
+        fundCompany: '',
+        fundManager: '',
         inceptionDate: '',
         fundSize: '',
         riskLevel: '',

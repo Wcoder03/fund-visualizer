@@ -1,8 +1,13 @@
 import { sanitizeObject } from './compliance';
 import { identifyFundType } from './fundTypes';
-import { fetchMarketData } from './mockFundData';
 import { fetchFundExtendedData } from './providers/eastmoneyProvider';
 import type { FundNavSnapshot } from '../types/portfolio';
+
+const MARKET_CONTEXT = {
+  rateTone: '利率环境整体平稳，但海外利率仍会影响成长资产估值',
+  equityTone: '权益市场结构分化，资金偏好确定性和景气度较高的方向',
+  fxTone: '汇率波动会影响 QDII 净值折算和短期表现',
+};
 import type {
   AnalysisFramework,
   FundAnalysisResult,
@@ -385,8 +390,6 @@ async function fetchSnapshot(fundCode: string): Promise<FundNavSnapshot | null> 
 }
 
 export async function runFundAnalysis(inputs: FundInput[]): Promise<FundAnalysisRun> {
-  const market = await fetchMarketData();
-
   const results = await Promise.all(
     inputs.map(async (input) => {
       const identification = identifyFundType(input);
@@ -400,7 +403,7 @@ export async function runFundAnalysis(inputs: FundInput[]): Promise<FundAnalysis
       const framework = getFramework(data);
       const performance = analyzeFundPerformance(data);
       const holdings = analyzeHoldings(data);
-      const trends = generateTrendForecast(data, market.equityTone);
+      const trends = generateTrendForecast(data, MARKET_CONTEXT.equityTone);
       const scenarios = generateScenarioAnalysis(data);
       const advice = generateRiskControlAdvice(data);
       const score = calculateScore(data, holdings);
