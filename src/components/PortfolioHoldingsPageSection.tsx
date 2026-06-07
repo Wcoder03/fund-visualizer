@@ -50,7 +50,6 @@ export default function PortfolioHoldingsPageSection({
   const [sortField, setSortField] = useState<SortField>(initialSort.field);
   const [sortDirection, setSortDirection] = useState<SortDirection>(initialSort.direction);
   const [formVisible, setFormVisible] = useState(false);
-  const [editingHolding, setEditingHolding] = useState<PortfolioHolding | null>(null);
 
   useEffect(() => {
     window.localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify({ field: sortField, direction: sortDirection }));
@@ -67,14 +66,8 @@ export default function PortfolioHoldingsPageSection({
     setSortDirection('desc');
   };
 
-  const editHolding = (holding: PortfolioHolding) => {
-    setEditingHolding(holding);
-    setFormVisible(true);
-  };
-
   const saveHolding = (holding: PortfolioHolding) => {
     onSave(holding);
-    setEditingHolding(null);
     setFormVisible(false);
   };
 
@@ -88,10 +81,7 @@ export default function PortfolioHoldingsPageSection({
         snapshotsLoading={snapshotsLoading}
         lastUpdatedAt={lastUpdatedAt}
         hasFallback={hasFallback}
-        onAdd={() => {
-          setEditingHolding(null);
-          setFormVisible((visible) => !visible);
-        }}
+        onAdd={() => setFormVisible((visible) => !visible)}
         onRefresh={() => onRefresh()}
         onSortChange={changeSort}
       />
@@ -100,11 +90,7 @@ export default function PortfolioHoldingsPageSection({
         <HoldingForm
           fundPool={fundPool}
           onSave={saveHolding}
-          editingHolding={editingHolding}
-          onCancelEdit={() => {
-            setEditingHolding(null);
-            setFormVisible(false);
-          }}
+          onCancelEdit={() => setFormVisible(false)}
         />
       )}
 
@@ -116,7 +102,6 @@ export default function PortfolioHoldingsPageSection({
         sortDirection={sortDirection}
         onSortChange={changeSort}
         onRetry={(fundCode) => onRefresh([fundCode])}
-        onEdit={editHolding}
         onUpdate={onSave}
         onDelete={onDelete}
       />

@@ -29,7 +29,6 @@ interface PortfolioHoldingsTableProps {
   sortDirection: SortDirection;
   onSortChange: (field: SortField) => void;
   onRetry?: (fundCode: string) => void;
-  onEdit: (holding: PortfolioHolding) => void;
   onUpdate: (holding: PortfolioHolding) => void;
   onDelete: (id: string) => void;
 }
@@ -119,6 +118,73 @@ function DcaInlineEditor({
   );
 }
 
+interface EditFormState {
+  holdingAmount: string;
+  holdingProfit: string;
+}
+
+function EditInlineEditor({
+  holding,
+  displayName,
+  form,
+  error,
+  onChange,
+  onCancel,
+  onSave,
+}: {
+  holding: PortfolioHolding;
+  displayName: string;
+  form: EditFormState;
+  error: string;
+  onChange: (form: EditFormState) => void;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  return (
+    <div className="border-t border-slate-200/80 bg-[#f8fafc] px-4 py-3.5">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+        {/* Left: fund info */}
+        <div className="min-w-0 shrink-0 lg:w-[200px]">
+          <p className="text-[14px] font-semibold text-slate-900 truncate">{displayName}</p>
+          <p className="mt-0.5 text-[12px] text-slate-400">{holding.fundCode}</p>
+        </div>
+
+        {/* Middle: form fields */}
+        <div className="flex flex-1 flex-wrap items-end gap-3">
+          <label className="text-[12px] font-medium text-slate-500">
+            持有金额
+            <input
+              type="number"
+              step="0.01"
+              value={form.holdingAmount}
+              onChange={(e) => onChange({ ...form, holdingAmount: e.target.value })}
+              className="field-control mt-1 block w-[140px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
+            />
+          </label>
+          <label className="text-[12px] font-medium text-slate-500">
+            持有收益
+            <input
+              type="number"
+              step="0.01"
+              value={form.holdingProfit}
+              onChange={(e) => onChange({ ...form, holdingProfit: e.target.value })}
+              className="field-control mt-1 block w-[140px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
+            />
+          </label>
+          <p className="text-[11px] text-slate-400 self-end pb-1.5">成本 = 持有金额 - 持有收益 · 份额按最新净值估算</p>
+        </div>
+
+        {/* Right: actions */}
+        <div className="flex shrink-0 gap-2">
+          <button type="button" onClick={onCancel} className="ui-button-secondary rounded-lg px-3.5 py-1.5 text-[12px] font-medium">取消</button>
+          <button type="button" onClick={onSave} className="ui-button-primary rounded-lg px-3.5 py-1.5 text-[12px] font-medium">保存修改</button>
+        </div>
+      </div>
+      {error && <p className="mt-2 text-[12px] text-red-500">{error}</p>}
+    </div>
+  );
+}
+
 export default function PortfolioHoldingsTable({
   holdings,
   snapshotsByFundCode,
@@ -127,13 +193,15 @@ export default function PortfolioHoldingsTable({
   sortDirection,
   onSortChange,
   onRetry,
-  onEdit,
   onUpdate,
   onDelete,
 }: PortfolioHoldingsTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingDcaId, setEditingDcaId] = useState<string | null>(null);
   const [dcaDraft, setDcaDraft] = useState<DcaPlanDraft | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<EditFormState>({ holdingAmount: '', holdingProfit: '' });
+  const [editError, setEditError] = useState('');
 
   const rows = useMemo<RowModel[]>(() => {
     return holdings.map((holding) => {
@@ -199,9 +267,11 @@ export default function PortfolioHoldingsTable({
             const dailyRate = row.snapshot?.marketStatus === 'nav_confirmed' ? row.profit.confirmedDailyProfitLossRate : row.profit.dailyProfitLossRate;
             const isExpanded = expandedId === row.holding.id;
             const isEditingDca = editingDcaId === row.holding.id && dcaDraft;
+            const isEditing = editingId === row.holding.id;
 
             const openDcaEditor = () => {
               setExpandedId(null);
+              setEditingId(null);
               setEditingDcaId(row.holding.id);
               setDcaDraft(toDcaDraft(row.holding));
             };
@@ -237,6 +307,46 @@ export default function PortfolioHoldingsTable({
               setDcaDraft(null);
             };
 
+            const openEdit = () => {
+              if (isEditing) {
+                setEditingId(null);
+                setEditError('');
+                return;
+              }
+              setExpandedId(null);
+              setEditingDcaId(null);
+              setDcaDraft(null);
+              setEditingId(row.holding.id);
+              setEditForm({
+                holdingAmount: row.holding.holdingAmount !== undefined ? String(row.holding.holdingAmount) : '',
+                holdingProfit: row.holding.holdingAmount !== undefined ? String(Number((row.holding.holdingAmount - row.holding.costAmount).toFixed(2))) : '',
+              });
+              setEditError('');
+            };
+
+            const saveEdit = () => {
+              const amount = Number(editForm.holdingAmount);
+              const profit = Number(editForm.holdingProfit);
+              if (!Number.isFinite(amount) || amount <= 0) {
+                setEditError('请输入有效的持有金额');
+                return;
+              }
+              if (!Number.isFinite(profit)) {
+                setEditError('请输入有效的持有收益');
+                return;
+              }
+              const cost = Math.max(0, Number((amount - profit).toFixed(2)));
+              onUpdate({
+                ...row.holding,
+                holdingAmount: Number(amount.toFixed(2)),
+                costAmount: cost,
+                note: profit !== 0 ? `持有收益：${profit.toFixed(2)} 元` : row.holding.note,
+                updatedAt: new Date().toISOString(),
+              });
+              setEditingId(null);
+              setEditError('');
+            };
+
             return (
               <Fragment key={row.holding.id}>
                 <tr className="border-b border-slate-100/80 transition-colors hover:bg-[#f8fafc]">
@@ -248,8 +358,8 @@ export default function PortfolioHoldingsTable({
                       {row.profit.sharesEstimated && <span className="whitespace-nowrap rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-medium text-orange-600 ring-1 ring-orange-200/60">份额估算</span>}
                     </div>
                     <div className="mt-1 flex gap-2 text-[13px] text-slate-400">
-                      <button type="button" onClick={() => setExpandedId(isExpanded ? null : row.holding.id)} className="whitespace-nowrap font-medium hover:text-blue-600 transition-colors">详情</button>
-                      <button type="button" onClick={() => onEdit(row.holding)} className="whitespace-nowrap font-medium hover:text-blue-600 transition-colors">编辑</button>
+                      <button type="button" onClick={() => { setExpandedId(isExpanded ? null : row.holding.id); setEditingId(null); }} className={`whitespace-nowrap font-medium transition-colors ${isExpanded ? 'text-blue-600' : 'hover:text-blue-600'}`}>详情</button>
+                      <button type="button" onClick={openEdit} className={`whitespace-nowrap font-medium transition-colors ${isEditing ? 'text-blue-600' : 'hover:text-blue-600'}`}>编辑</button>
                       <button type="button" onClick={() => onDelete(row.holding.id)} className="whitespace-nowrap font-medium hover:text-red-500 transition-colors">删除</button>
                     </div>
                   </td>
@@ -328,6 +438,21 @@ export default function PortfolioHoldingsTable({
                   <tr>
                     <td colSpan={columns.length} className="p-0">
                       <PortfolioHoldingDetail holding={row.holding} snapshot={row.snapshot} error={row.error} />
+                    </td>
+                  </tr>
+                )}
+                {isEditing && (
+                  <tr>
+                    <td colSpan={columns.length} className="p-0">
+                      <EditInlineEditor
+                        holding={row.holding}
+                        displayName={row.displayName}
+                        form={editForm}
+                        error={editError}
+                        onChange={setEditForm}
+                        onCancel={() => { setEditingId(null); setEditError(''); }}
+                        onSave={saveEdit}
+                      />
                     </td>
                   </tr>
                 )}
