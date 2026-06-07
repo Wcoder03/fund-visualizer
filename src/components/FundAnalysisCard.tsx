@@ -38,10 +38,13 @@ function EmptyState({ text }: { text: string }) {
 }
 
 export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
-  const { data, framework, performance, holdings, trends, scenarios, advice, score } = result;
+  const { data, framework, performance, holdings, trends, scenarios, advice, score, extendedData } = result;
   const [detailsVisible, setDetailsVisible] = useState(false);
 
   const hasReturns = data.return1m !== 0 || data.return3m !== 0 || data.return1y !== 0;
+  const hasEvaluation = extendedData?.performanceEvaluation?.dimensions?.length;
+  const hasHolderStructure = extendedData?.holderStructure;
+  const managers = extendedData?.managers ?? [];
   const hasHoldings = data.holdings.length > 0;
   const hasIndustry = data.industryAllocation.length > 0;
   const hasRisk = data.maxDrawdown !== 0 || data.volatility !== 0 || data.sharpeRatio !== 0;
@@ -59,7 +62,9 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
             </div>
             <h3 className="mt-1.5 text-[17px] font-bold text-slate-900">{data.name}</h3>
             <p className="mt-0.5 text-[13px] text-slate-400">
-              {data.company || '基金公司信息待更新'} · {data.coreDirection || '投资方向待更新'}
+              {data.company || '基金公司信息待更新'}
+              {data.manager ? ` · ${data.manager}` : ''}
+              {data.coreDirection ? ` · ${data.coreDirection}` : ''}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -101,10 +106,11 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13px]">
                 {[
                   ['基金公司', data.company],
+                  ['基金经理', data.manager || undefined],
                   ['投资范围', data.investmentScope],
                   ['当前风格', data.currentStyle || undefined],
                   ['累计净值', data.accumulatedNav ? data.accumulatedNav.toFixed(4) : undefined],
-                  ['夏普比率', data.sharpeRatio ? data.sharpeRatio.toFixed(2) : undefined],
+                  ['基金规模', data.scale || undefined],
                   ['数据来源', data.source],
                 ].map(([label, val]) => (
                   <div key={label} className="flex justify-between gap-2">
@@ -113,6 +119,31 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
                   </div>
                 ))}
               </div>
+              {managers.length > 0 && (
+                <div className="mt-3 border-t border-slate-100 pt-3">
+                  <p className="text-[11px] font-semibold text-slate-400 mb-1.5">基金经理</p>
+                  {managers.map((m) => (
+                    <div key={m.name} className="flex items-center gap-2 text-[12px]">
+                      <span className="font-medium text-slate-700">{m.name}</span>
+                      {m.workTime && <span className="text-slate-400">任职 {m.workTime}</span>}
+                      {m.star > 0 && <span className="text-amber-500">{'★'.repeat(Math.min(5, m.star))}</span>}
+                      {m.performanceScore !== undefined && <span className="text-slate-400">综合 {m.performanceScore}分</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {hasEvaluation && (
+                <div className="mt-3 border-t border-slate-100 pt-3">
+                  <p className="text-[11px] font-semibold text-slate-400 mb-1.5">综合评价 ({extendedData!.performanceEvaluation!.averageScore}分)</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {extendedData!.performanceEvaluation!.dimensions.filter(d => d.name && d.score > 0).map((d) => (
+                      <span key={d.name} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
+                        {d.name} {d.score}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4">
               <h4 className="mb-2 text-[14px] font-semibold text-slate-800">{framework.title}</h4>
@@ -255,6 +286,30 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
               </div>
             )}
           </div>
+
+          {/* Holder structure */}
+          {hasHolderStructure && (
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <h4 className="mb-2 text-[14px] font-semibold text-slate-800">持有人结构 <span className="text-[11px] font-normal text-slate-400">{hasHolderStructure.date}</span></h4>
+              <div className="flex items-center gap-4">
+                {[
+                  { label: '机构持有', value: hasHolderStructure.institutional, color: 'bg-blue-400' },
+                  { label: '个人持有', value: hasHolderStructure.individual, color: 'bg-indigo-400' },
+                  { label: '内部持有', value: hasHolderStructure.internal, color: 'bg-slate-300' },
+                ].filter(h => h.value > 0).map(h => (
+                  <div key={h.label} className="flex-1">
+                    <div className="flex items-center justify-between text-[12px] mb-1">
+                      <span className="text-slate-500">{h.label}</span>
+                      <span className="font-medium text-slate-700 tabular-nums">{h.value.toFixed(2)}%</span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                      <div className={`h-full rounded-full ${h.color}`} style={{ width: `${Math.min(100, h.value)}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Performance analysis */}
           <div className="rounded-xl border border-slate-200 bg-white p-4">

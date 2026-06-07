@@ -1,6 +1,7 @@
 import { sanitizeObject } from './compliance';
 import { identifyFundType } from './fundTypes';
 import { fetchMarketData } from './mockFundData';
+import { fetchFundExtendedData } from './providers/eastmoneyProvider';
 import type { FundNavSnapshot } from '../types/portfolio';
 import type {
   AnalysisFramework,
@@ -49,19 +50,29 @@ function inferDirection(name: string, type: string): string {
   return '均衡配置';
 }
 
-function buildProfileFromSnapshot(snapshot: FundNavSnapshot, identification: ReturnType<typeof identifyFundType>): FundProfile {
+function buildProfileFromSnapshot(
+  snapshot: FundNavSnapshot,
+  identification: ReturnType<typeof identifyFundType>,
+  extended?: import('../types/fund').FundExtendedData
+): FundProfile {
   const nav = snapshot.displayNav ?? snapshot.latestConfirmedNav ?? snapshot.currentNav ?? 0;
-  const dailyChange = snapshot.dailyChangeRate ?? snapshot.intradayChangeRate ?? 0;
   const isBond = identification.fundType === '债券型';
   const isMoney = identification.fundType === '货币型';
+
+  const managerName = extended?.managers?.length
+    ? extended.managers.map((m) => m.name).join('、')
+    : '';
+
+  const assetAlloc = extended?.assetAllocation;
+  const returns = extended?.returnRates;
 
   return {
     code: snapshot.fundCode,
     name: snapshot.fundName,
     company: inferCompany(snapshot.fundName),
-    manager: '',
+    manager: managerName,
     inceptionDate: '',
-    scale: '',
+    scale: assetAlloc?.navSize ? `${assetAlloc.navSize.toFixed(2)}亿元` : '',
     type: identification.fundType,
     riskLevel: isMoney ? '低风险' : isBond ? '中低风险' : '中高风险',
     investmentScope: identification.investmentScope,
@@ -69,19 +80,19 @@ function buildProfileFromSnapshot(snapshot: FundNavSnapshot, identification: Ret
     currentStyle: '',
     latestNav: nav,
     accumulatedNav: nav,
-    return1m: 0,
+    return1m: returns?.return1n ?? 0,
     return3m: 0,
-    return6m: 0,
-    return1y: 0,
-    return3y: 0,
+    return6m: returns?.return6y ?? 0,
+    return1y: returns?.return1y ?? 0,
+    return3y: returns?.return3y ?? 0,
     maxDrawdown: 0,
     volatility: 0,
     sharpeRatio: 0,
     holdings: [],
     industryAllocation: [],
-    stockPosition: 0,
-    bondPosition: 0,
-    cashPosition: 0,
+    stockPosition: extended?.stockPosition ?? assetAlloc?.stockRatio ?? 0,
+    bondPosition: assetAlloc?.bondRatio ?? 0,
+    cashPosition: assetAlloc?.cashRatio ?? 0,
     source: snapshot.dataSource === 'eastmoney' ? '东方财富实时数据' : snapshot.dataSource === 'mock' ? '演示数据' : '数据源',
     dataDate: snapshot.navDate || new Date().toISOString().slice(0, 10),
   };
@@ -379,9 +390,12 @@ export async function runFundAnalysis(inputs: FundInput[]): Promise<FundAnalysis
   const results = await Promise.all(
     inputs.map(async (input) => {
       const identification = identifyFundType(input);
-      const snapshot = await fetchSnapshot(input.code);
+      const [snapshot, extended] = await Promise.all([
+        fetchSnapshot(input.code),
+        fetchFundExtendedData(input.code),
+      ]);
       const data = snapshot
-        ? buildProfileFromSnapshot(snapshot, identification)
+        ? buildProfileFromSnapshot(snapshot, identification, extended)
         : { code: input.code, name: input.name, company: '', manager: '', inceptionDate: '', scale: '', type: identification.fundType, riskLevel: '中高风险' as const, investmentScope: identification.investmentScope, coreDirection: inferDirection(input.name, identification.fundType), currentStyle: '', latestNav: 0, accumulatedNav: 0, return1m: 0, return3m: 0, return6m: 0, return1y: 0, return3y: 0, maxDrawdown: 0, volatility: 0, sharpeRatio: 0, holdings: [], industryAllocation: [], stockPosition: 0, bondPosition: 0, cashPosition: 0, source: '数据获取失败', dataDate: '' };
       const framework = getFramework(data);
       const performance = analyzeFundPerformance(data);
@@ -402,6 +416,7 @@ export async function runFundAnalysis(inputs: FundInput[]): Promise<FundAnalysis
         scenarios,
         advice,
         score,
+        extendedData: extended,
       });
     })
   );

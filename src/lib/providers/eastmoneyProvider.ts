@@ -1,6 +1,7 @@
 import { getMarketStatus } from '../marketStatus';
 import { normalizeNumber, normalizeRatePercent } from '../fundDataNormalizer';
 import type {
+  FundExtendedData,
   FundLatestNav,
   FundNavHistoryItem,
   FundRiskMetrics,
@@ -213,6 +214,106 @@ export const eastmoneyProvider: FundDataProvider = {
     return null satisfies FundRiskMetrics | null;
   },
 };
+
+export async function fetchFundExtendedData(fundCode: string): Promise<FundExtendedData> {
+  try {
+    const text = await fetchText(`https://fund.eastmoney.com/pingzhongdata/${fundCode}.js?v=${Date.now()}`);
+
+    // 收益率
+    const syl1y = normalizeNumber(extractStringVariable(text, 'syl_1y'));
+    const syl6y = normalizeNumber(extractStringVariable(text, 'syl_6y'));
+    const syl3y = normalizeNumber(extractStringVariable(text, 'syl_3y'));
+    const syl1n = normalizeNumber(extractStringVariable(text, 'syl_1n'));
+
+    // 基金经理
+    const managerRaw = extractJsonVariable<Array<{
+      name: string;
+      workTime: string;
+      fundSize: string;
+      star: number;
+      power?: { data?: number[] };
+    }>>(text, 'Data_currentFundManager');
+    const managers = (managerRaw ?? []).map((m) => ({
+      name: m.name,
+      workTime: m.workTime,
+      fundSize: m.fundSize,
+      star: m.star,
+      performanceScore: m.power?.data?.length ? Math.round(m.power.data.reduce((s, v) => s + v, 0) / m.power.data.length) : undefined,
+    }));
+
+    // 资产配置
+    const assetRaw = extractJsonVariable<{
+      series: { name: string; data: number[] }[];
+      categories: string[];
+    }>(text, 'Data_assetAllocation');
+    let assetAllocation: FundExtendedData['assetAllocation'];
+    if (assetRaw?.series?.length && assetRaw.categories?.length) {
+      const lastIdx = assetRaw.categories.length - 1;
+      const stock = assetRaw.series.find((s) => s.name.includes('股票'));
+      const bond = assetRaw.series.find((s) => s.name.includes('债券'));
+      const cash = assetRaw.series.find((s) => s.name.includes('现金'));
+      const nav = assetRaw.series.find((s) => s.name.includes('净资产'));
+      assetAllocation = {
+        stockRatio: stock?.data?.[lastIdx] ?? 0,
+        bondRatio: bond?.data?.[lastIdx] ?? 0,
+        cashRatio: cash?.data?.[lastIdx] ?? 0,
+        navSize: nav?.data?.[lastIdx],
+        date: assetRaw.categories[lastIdx] ?? '',
+      };
+    }
+
+    // 持有人结构
+    const holderRaw = extractJsonVariable<{
+      series: { name: string; data: number[] }[];
+      categories: string[];
+    }>(text, 'Data_holderStructure');
+    let holderStructure: FundExtendedData['holderStructure'];
+    if (holderRaw?.series?.length && holderRaw.categories?.length) {
+      const lastIdx = holderRaw.categories.length - 1;
+      const inst = holderRaw.series.find((s) => s.name.includes('机构'));
+      const indiv = holderRaw.series.find((s) => s.name.includes('个人'));
+      const intern = holderRaw.series.find((s) => s.name.includes('内部'));
+      holderStructure = {
+        institutional: inst?.data?.[lastIdx] ?? 0,
+        individual: indiv?.data?.[lastIdx] ?? 0,
+        internal: intern?.data?.[lastIdx] ?? 0,
+        date: holderRaw.categories[lastIdx] ?? '',
+      };
+    }
+
+    // 综合评价
+    const evalRaw = extractJsonVariable<{
+      averageScore?: string | number;
+      categories?: string[];
+      data?: number[];
+    }>(text, 'Data_performanceEvaluation');
+    let performanceEvaluation: FundExtendedData['performanceEvaluation'];
+    if (evalRaw?.categories?.length && evalRaw.data?.length) {
+      performanceEvaluation = {
+        averageScore: Number(evalRaw.averageScore ?? 0),
+        dimensions: evalRaw.categories.map((cat, i) => ({
+          name: cat ?? `维度${i + 1}`,
+          score: evalRaw.data?.[i] ?? 0,
+        })),
+      };
+    }
+
+    // 股票仓位（最新值）
+    const positionsRaw = extractJsonVariable<[number, number][]>(text, 'Data_fundSharesPositions');
+    const stockPosition = positionsRaw?.length ? positionsRaw[positionsRaw.length - 1]?.[1] : undefined;
+
+    return {
+      managers,
+      assetAllocation,
+      returnRates: { return1y: syl1y, return6y: syl6y, return3y: syl3y, return1n: syl1n },
+      holderStructure,
+      performanceEvaluation,
+      stockPosition,
+    };
+  } catch {
+    return { managers: [] };
+  }
+}
 
 export const eastmoneyParsing = {
   extractJsonVariable,

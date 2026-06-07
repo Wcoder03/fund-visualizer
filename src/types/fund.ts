@@ -312,3 +312,53 @@ export interface FundRiskMetrics {
   dataSource: UnifiedDataSource;
   dataStatus: UnifiedDataStatus;
 }
+
+// 基金经理信息
+export interface FundManagerInfo {
+  name: string;
+  workTime: string;
+  fundSize: string;
+  star: number;
+  performanceScore?: number;
+}
+
+// 资产配置
+export interface FundAssetAllocation {
+  stockRatio: number;
+  bondRatio: number;
+  cashRatio: number;
+  navSize?: number;
+  date: string;
+}
+
+// 收益率
+export interface FundReturnRates {
+  return1y?: number;
+  return6y?: number;
+  return3y?: number;
+  return1n?: number;
+}
+
+// 持有人结构
+export interface FundHolderStructure {
+  institutional: number;
+  individual: number;
+  internal: number;
+  date: string;
+}
+
+// 综合评价
+export interface FundPerformanceEvaluation {
+  averageScore: number;
+  dimensions: { name: string; score: number }[];
+}
+
+// 扩展基金快照（包含 pingzhongdata 解析的额外数据）
+export interface FundExtendedData {
+  managers: FundManagerInfo[];
+  assetAllocation?: FundAssetAllocation;
+  returnRates?: FundReturnRates;
+  holderStructure?: FundHolderStructure;
+  performanceEvaluation?: FundPerformanceEvaluation;
+  stockPosition?: number;
+}

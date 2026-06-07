@@ -149,6 +149,7 @@ export interface FundAnalysisResult {
   scenarios: ScenarioAnalysis[];
   advice: RiskControlAdvice[];
   score: number;
+  extendedData?: import('./fund').FundExtendedData;
 }
 
 export interface FundComparisonRow {
