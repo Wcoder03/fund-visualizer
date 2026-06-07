@@ -18,49 +18,50 @@ export default function BrandLogo({ className = 'h-8 w-8' }: BrandLogoProps) {
           <stop offset="0.52" stopColor="#2563EB" />
           <stop offset="1" stopColor="#4F46E5" />
         </linearGradient>
-        <linearGradient id="fundscope-red" x1="44" y1="8" x2="55" y2="19" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#FB7185" />
-          <stop offset="1" stopColor="#EF4444" />
+        <linearGradient id="fundscope-red" x1="45" y1="5" x2="57" y2="17" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FF8A6A" />
+          <stop offset="1" stopColor="#F43F5E" />
         </linearGradient>
-        <filter id="fundscope-shadow" x="7" y="12" width="46" height="37" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="0" dy="0.8" stdDeviation="0.8" floodColor="#0F172A" floodOpacity="0.12" />
+        <filter id="fundscope-shadow" x="7" y="9" width="48" height="39" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="0" dy="0.6" stdDeviation="0.6" floodColor="#0F172A" floodOpacity="0.1" />
         </filter>
       </defs>
 
       <rect width="64" height="64" rx="16" fill="url(#fundscope-bg)" />
       <g opacity="0.7" fill="#DBEAFE">
-        <circle cx="12" cy="15" r="1" />
-        <circle cx="18" cy="10" r="0.8" />
-        <circle cx="31" cy="12" r="0.9" />
-        <circle cx="52" cy="31" r="0.9" />
-        <circle cx="55" cy="40" r="0.8" />
-        <circle cx="32" cy="53" r="0.9" />
-        <circle cx="15" cy="50" r="0.8" />
-        <circle cx="8" cy="31" r="0.8" />
+        <circle cx="12" cy="16" r="0.9" />
+        <circle cx="19" cy="11" r="0.8" />
+        <circle cx="30" cy="8" r="0.9" />
+        <circle cx="10" cy="27" r="0.8" />
+        <circle cx="35" cy="27" r="0.8" />
+        <circle cx="53" cy="25" r="0.8" />
+        <circle cx="52" cy="39" r="0.8" />
+        <circle cx="34" cy="52" r="0.8" />
+        <circle cx="16" cy="50" r="0.8" />
       </g>
 
       <g filter="url(#fundscope-shadow)">
         <path
-          d="M11 44L23 30.5L35 35.5L45.5 20.5L50.5 14.5"
+          d="M12 43L23.5 30L34.5 34.5L44.5 22L51 12"
           stroke="white"
-          strokeWidth="2.2"
+          strokeWidth="2.1"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <circle cx="11" cy="44" r="2.5" fill="white" />
-        <circle cx="23" cy="30.5" r="2.7" fill="white" />
-        <circle cx="35" cy="35.5" r="2.6" fill="white" />
-        <circle cx="45.5" cy="20.5" r="2.6" fill="white" />
+        <circle cx="12" cy="43" r="2.3" fill="white" />
+        <circle cx="23.5" cy="30" r="2.6" fill="white" />
+        <circle cx="34.5" cy="34.5" r="2.6" fill="white" />
+        <circle cx="44.5" cy="22" r="2.6" fill="white" />
       </g>
 
       <path
-        d="M49.5 8.5L52.1 14L57.5 16.5L52.1 19L49.5 24.5L46.9 19L41.5 16.5L46.9 14L49.5 8.5Z"
+        d="M51 5.5L53.7 10.3L59 12.5L53.7 14.7L51 20L48.3 14.7L43 12.5L48.3 10.3L51 5.5Z"
         fill="url(#fundscope-red)"
       />
       <path
-        d="M49.5 12.2L50.9 15.1L53.8 16.5L50.9 17.9L49.5 20.8L48.1 17.9L45.2 16.5L48.1 15.1L49.5 12.2Z"
-        fill="#F43F5E"
-        opacity="0.9"
+        d="M51 8.7L52.4 11.5L55.2 12.5L52.4 13.5L51 16.3L49.6 13.5L46.8 12.5L49.6 11.5L51 8.7Z"
+        fill="#FF6B7A"
+        opacity="0.95"
       />
     </svg>
   );

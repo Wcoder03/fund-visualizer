@@ -6,7 +6,6 @@ const DEFAULT_SEARCH_KEYWORDS = ['电力', '科技', '混合', '指数', 'QDII']
 
 function snapshotToFundData(snapshot: FundNavSnapshot): FundData {
   const nav = snapshot.displayNav ?? snapshot.latestConfirmedNav ?? snapshot.currentNav ?? 0;
-  const dailyChange = snapshot.dailyChangeRate ?? snapshot.intradayChangeRate ?? 0;
 
   const name = snapshot.fundName;
   const upper = name.toUpperCase();
