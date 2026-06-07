@@ -1,6 +1,7 @@
 import { sanitizeObject } from './compliance';
 import { identifyFundType } from './fundTypes';
-import { fetchMarketData, getMockFundData } from './mockFundData';
+import { fetchMarketData } from './mockFundData';
+import type { FundNavSnapshot } from '../types/portfolio';
 import type {
   AnalysisFramework,
   FundAnalysisResult,
@@ -16,7 +17,75 @@ import type {
   TrendLabel,
 } from '../types/fundAnalysis';
 
-export { identifyFundType, getMockFundData };
+export { identifyFundType };
+
+function inferCompany(name: string): string {
+  const companies: [string, string][] = [
+    ['华泰柏瑞', '华泰柏瑞基金'], ['华宝', '华宝基金'], ['广发', '广发基金'],
+    ['易方达', '易方达基金'], ['长城', '长城基金'], ['南方', '南方基金'],
+    ['华夏', '华夏基金'], ['嘉实', '嘉实基金'], ['博时', '博时基金'],
+    ['招商', '招商基金'], ['富国', '富国基金'], ['汇添富', '汇添富基金'],
+    ['中欧', '中欧基金'], ['景顺长城', '景顺长城基金'], ['工银瑞信', '工银瑞信基金'],
+    ['鹏华', '鹏华基金'], ['天弘', '天弘基金'], ['交银', '交银施罗德基金'],
+  ];
+  for (const [keyword, company] of companies) {
+    if (name.includes(keyword)) return company;
+  }
+  return '';
+}
+
+function inferDirection(name: string, type: string): string {
+  const keywords: [string, string][] = [
+    ['电力', '电力公用事业'], ['新能源', '新能源产业链'], ['纳斯达克', '纳斯达克100'],
+    ['科技', '科技创新'], ['医药', '医药健康'], ['消费', '大消费'],
+    ['半导体', '半导体芯片'], ['白酒', '白酒消费'], ['红利', '高股息红利'],
+    ['全球成长', '全球成长精选'], ['全球新能源', '全球新能源车'],
+  ];
+  for (const [keyword, direction] of keywords) {
+    if (name.includes(keyword)) return direction;
+  }
+  if (type === 'QDII') return '海外资产配置';
+  if (type === '债券型') return '固定收益';
+  return '均衡配置';
+}
+
+function buildProfileFromSnapshot(snapshot: FundNavSnapshot, identification: ReturnType<typeof identifyFundType>): FundProfile {
+  const nav = snapshot.displayNav ?? snapshot.latestConfirmedNav ?? snapshot.currentNav ?? 0;
+  const dailyChange = snapshot.dailyChangeRate ?? snapshot.intradayChangeRate ?? 0;
+  const isBond = identification.fundType === '债券型';
+  const isMoney = identification.fundType === '货币型';
+
+  return {
+    code: snapshot.fundCode,
+    name: snapshot.fundName,
+    company: inferCompany(snapshot.fundName),
+    manager: '',
+    inceptionDate: '',
+    scale: '',
+    type: identification.fundType,
+    riskLevel: isMoney ? '低风险' : isBond ? '中低风险' : '中高风险',
+    investmentScope: identification.investmentScope,
+    coreDirection: inferDirection(snapshot.fundName, identification.fundType),
+    currentStyle: '',
+    latestNav: nav,
+    accumulatedNav: nav,
+    return1m: 0,
+    return3m: 0,
+    return6m: 0,
+    return1y: 0,
+    return3y: 0,
+    maxDrawdown: 0,
+    volatility: 0,
+    sharpeRatio: 0,
+    holdings: [],
+    industryAllocation: [],
+    stockPosition: 0,
+    bondPosition: 0,
+    cashPosition: 0,
+    source: snapshot.dataSource === 'eastmoney' ? '东方财富实时数据' : snapshot.dataSource === 'mock' ? '演示数据' : '数据源',
+    dataDate: snapshot.navDate || new Date().toISOString().slice(0, 10),
+  };
+}
 
 function formatPercent(value: number): string {
   return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
@@ -292,13 +361,28 @@ export function compareFunds(results: FundAnalysisResult[]): FundComparisonResul
   };
 }
 
+async function fetchSnapshot(fundCode: string): Promise<FundNavSnapshot | null> {
+  try {
+    const resp = await fetch(`/api/funds/${fundCode}/snapshot`);
+    if (!resp.ok) return null;
+    const snapshot = (await resp.json()) as FundNavSnapshot;
+    if (snapshot.dataStatus === 'error') return null;
+    return snapshot;
+  } catch {
+    return null;
+  }
+}
+
 export async function runFundAnalysis(inputs: FundInput[]): Promise<FundAnalysisRun> {
   const market = await fetchMarketData();
 
   const results = await Promise.all(
     inputs.map(async (input) => {
       const identification = identifyFundType(input);
-      const data = await getMockFundData(input, identification);
+      const snapshot = await fetchSnapshot(input.code);
+      const data = snapshot
+        ? buildProfileFromSnapshot(snapshot, identification)
+        : { code: input.code, name: input.name, company: '', manager: '', inceptionDate: '', scale: '', type: identification.fundType, riskLevel: '中高风险' as const, investmentScope: identification.investmentScope, coreDirection: inferDirection(input.name, identification.fundType), currentStyle: '', latestNav: 0, accumulatedNav: 0, return1m: 0, return3m: 0, return6m: 0, return1y: 0, return3y: 0, maxDrawdown: 0, volatility: 0, sharpeRatio: 0, holdings: [], industryAllocation: [], stockPosition: 0, bondPosition: 0, cashPosition: 0, source: '数据获取失败', dataDate: '' };
       const framework = getFramework(data);
       const performance = analyzeFundPerformance(data);
       const holdings = analyzeHoldings(data);
