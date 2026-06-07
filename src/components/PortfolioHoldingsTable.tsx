@@ -44,16 +44,16 @@ interface RowModel {
   displayName: string;
 }
 
-const columns: Array<{ field?: SortField; label: string; align?: 'left' | 'right' }> = [
+const columns: Array<{ field?: SortField; label: string; align?: 'left' | 'right' | 'center' }> = [
   { field: 'fundName', label: '基金', align: 'left' },
   { field: 'marketValue', label: '当前市值' },
   { label: '成本金额' },
   { label: '当前净值' },
   { field: 'dailyProfitLoss', label: '当日收益' },
   { field: 'totalProfitLoss', label: '持有收益' },
-  { field: 'holdingDays', label: '持有天数' },
-  { label: '数据状态' },
-  { label: '定投' },
+  { field: 'holdingDays', label: '持有天数', align: 'center' },
+  { label: '数据状态', align: 'center' },
+  { label: '定投', align: 'center' },
 ];
 
 function sortValue(row: RowModel, field: SortField): number | string {
@@ -166,23 +166,23 @@ export default function PortfolioHoldingsTable({
   }
 
   return (
-    <div className="ui-card overflow-hidden">
-      <table className="w-full table-fixed border-collapse text-left">
+    <div className="ui-card overflow-x-auto">
+      <table className="w-full min-w-[1180px] border-collapse text-left">
         <colgroup>
-          <col className="w-[23%]" />
-          <col className="w-[11%]" />
-          <col className="w-[11%]" />
-          <col className="w-[12%]" />
-          <col className="w-[10%]" />
-          <col className="w-[10%]" />
-          <col className="w-[8%]" />
-          <col className="w-[10%]" />
-          <col className="w-[6%]" />
+          <col style={{ width: 280 }} />
+          <col style={{ width: 140 }} />
+          <col style={{ width: 140 }} />
+          <col style={{ width: 130 }} />
+          <col style={{ width: 120 }} />
+          <col style={{ width: 130 }} />
+          <col style={{ width: 100 }} />
+          <col style={{ width: 140 }} />
+          <col style={{ width: 100 }} />
         </colgroup>
         <thead>
           <tr className="border-b border-slate-200/80 bg-[#f8fafc]">
             {columns.map((column) => (
-              <th key={column.label} className={`px-3 py-2.5 text-[13px] font-semibold text-slate-500 leading-5 ${column.align === 'left' ? 'text-left' : 'text-right'}`}>
+              <th key={column.label} className={`whitespace-nowrap px-4 py-3 text-[13px] font-semibold text-slate-500 leading-5 ${column.align === 'left' ? 'text-left' : 'text-center'}`}>
                 {column.field ? (
                   <button type="button" onClick={() => onSortChange(column.field as SortField)} className="inline-flex items-center gap-1 hover:text-blue-600 transition-colors">
                     {column.label}
@@ -240,49 +240,58 @@ export default function PortfolioHoldingsTable({
             return (
               <Fragment key={row.holding.id}>
                 <tr className="border-b border-slate-100/80 transition-colors hover:bg-[#f8fafc]">
-                  <td className="px-3 py-[14px] align-top">
+                  {/* 基金 */}
+                  <td className="px-4 py-[16px] align-top">
                     <p className="truncate text-[15px] font-semibold text-slate-900 leading-[22px]">{row.displayName}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span className="text-[13px] text-slate-400 font-medium">{row.holding.fundCode}</span>
-                      {row.profit.sharesEstimated && <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-medium text-orange-600 ring-1 ring-orange-200/60">份额估算</span>}
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="whitespace-nowrap text-[13px] text-slate-400 font-medium">{row.holding.fundCode}</span>
+                      {row.profit.sharesEstimated && <span className="whitespace-nowrap rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-medium text-orange-600 ring-1 ring-orange-200/60">份额估算</span>}
                     </div>
-                    <div className="mt-1.5 flex flex-wrap gap-2 text-[13px] text-slate-400">
-                      <button type="button" onClick={() => setExpandedId(isExpanded ? null : row.holding.id)} className="font-medium hover:text-blue-600 transition-colors">详情</button>
-                      <button type="button" onClick={() => onEdit(row.holding)} className="font-medium hover:text-blue-600 transition-colors">编辑</button>
-                      <button type="button" onClick={() => onDelete(row.holding.id)} className="font-medium hover:text-red-500 transition-colors">删除</button>
+                    <div className="mt-1.5 flex gap-2 text-[13px] text-slate-400">
+                      <button type="button" onClick={() => setExpandedId(isExpanded ? null : row.holding.id)} className="whitespace-nowrap font-medium hover:text-blue-600 transition-colors">详情</button>
+                      <button type="button" onClick={() => onEdit(row.holding)} className="whitespace-nowrap font-medium hover:text-blue-600 transition-colors">编辑</button>
+                      <button type="button" onClick={() => onDelete(row.holding.id)} className="whitespace-nowrap font-medium hover:text-red-500 transition-colors">删除</button>
                     </div>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.marketValue)}</p>
-                    <p className="mt-0.5 text-[12px] text-slate-400">份额 {formatNumber(row.profit.calculatedHoldingShares, 2)}</p>
+                  {/* 当前市值 */}
+                  <td className="px-4 py-[16px] text-right align-top">
+                    <p className="whitespace-nowrap text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.marketValue)}</p>
+                    <p className="mt-1 whitespace-nowrap text-[12px] text-slate-400">份额 {formatNumber(row.profit.calculatedHoldingShares, 2)}</p>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.costAmount)}</p>
-                    <p className="mt-0.5 text-[12px] text-slate-400">成本净值 {formatNumber(row.profit.inferredCostNav, 2)}</p>
+                  {/* 成本金额 */}
+                  <td className="px-4 py-[16px] text-right align-top">
+                    <p className="whitespace-nowrap text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.costAmount)}</p>
+                    <p className="mt-1 whitespace-nowrap text-[12px] text-slate-400">成本净值 {formatNumber(row.profit.inferredCostNav, 2)}</p>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatNav(row.displayNav)}</p>
-                    <p className="mt-0.5 text-[12px] text-slate-400">{row.navDate || '--'}</p>
+                  {/* 当前净值 */}
+                  <td className="px-4 py-[16px] text-right align-top">
+                    <p className="whitespace-nowrap text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatNav(row.displayNav)}</p>
+                    <p className="mt-1 whitespace-nowrap text-[12px] text-slate-400">{row.navDate || '--'}</p>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-bold leading-6 tabular-nums"><ProfitLossValue value={dailyValue} type="money" /></p>
-                    <p className="mt-0.5 text-[12px]"><ProfitLossValue value={dailyRate} type="rate" /></p>
+                  {/* 当日收益 */}
+                  <td className="px-4 py-[16px] text-right align-top">
+                    <p className="whitespace-nowrap text-[15px] font-bold leading-6 tabular-nums"><ProfitLossValue value={dailyValue} type="money" /></p>
+                    <p className="mt-1 whitespace-nowrap text-[12px]"><ProfitLossValue value={dailyRate} type="rate" /></p>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-bold leading-6 tabular-nums"><ProfitLossValue value={row.profit.totalProfitLoss} type="money" /></p>
-                    <p className="mt-0.5 text-[12px]"><ProfitLossValue value={row.profit.totalProfitLossRate} type="rate" /></p>
+                  {/* 持有收益 */}
+                  <td className="px-4 py-[16px] text-right align-top">
+                    <p className="whitespace-nowrap text-[15px] font-bold leading-6 tabular-nums"><ProfitLossValue value={row.profit.totalProfitLoss} type="money" /></p>
+                    <p className="mt-1 whitespace-nowrap text-[12px]"><ProfitLossValue value={row.profit.totalProfitLossRate} type="rate" /></p>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top text-[14px] font-medium text-slate-600 tabular-nums">{row.profit.holdingDays}</td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <div className="flex flex-col items-end gap-1">
+                  {/* 持有天数 */}
+                  <td className="whitespace-nowrap px-4 py-[16px] text-center align-top text-[14px] font-medium text-slate-600 tabular-nums">{row.profit.holdingDays}</td>
+                  {/* 数据状态 */}
+                  <td className="px-4 py-[16px] align-top">
+                    <div className="flex flex-col items-center gap-1">
                       <NavStatusBadge status={row.snapshot?.marketStatus} />
                       <DataStatusBadge snapshot={row.snapshot} error={row.error} />
                       {row.error && <button type="button" onClick={() => onRetry?.(row.holding.fundCode)} className="text-[12px] text-blue-600 font-medium hover:text-blue-700 transition-colors">重试</button>}
                     </div>
                   </td>
-                  <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[13px] text-slate-500">{dcaSummary(row.holding)}</p>
-                    <button type="button" onClick={openDcaEditor} className="mt-1 text-[12px] font-medium text-slate-400 hover:text-blue-600 transition-colors">
+                  {/* 定投 */}
+                  <td className="px-4 py-[16px] text-center align-top">
+                    <p className="whitespace-nowrap text-[13px] text-slate-500">{dcaSummary(row.holding)}</p>
+                    <button type="button" onClick={openDcaEditor} className="mt-1 whitespace-nowrap text-[12px] font-medium text-slate-400 hover:text-blue-600 transition-colors">
                       {row.holding.dcaPlan?.enabled ? '编辑' : '设置'}
                     </button>
                   </td>
