@@ -1,7 +1,7 @@
 import ProfitLossValue from './ProfitLossValue';
 import SectionHeading from './SectionHeading';
 import { calculatePortfolioProfitLoss } from '../lib/portfolioCalculator';
-import { formatMoney, formatRate } from '../lib/portfolioFormatters';
+import { formatMoney } from '../lib/portfolioFormatters';
 import type { FundNavSnapshot, PortfolioHolding } from '../types/portfolio';
 
 interface HoldingSummaryProps {

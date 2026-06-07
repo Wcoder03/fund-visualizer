@@ -4,7 +4,6 @@ import type { PortfolioHolding } from '../types/portfolio';
 import { analyzeFund, type FundAnalysisResult } from '../lib/fundAdvisorService';
 import type { FundNavSnapshot } from '../types/portfolio';
 import { loadPortfolioFromStorage, savePortfolioToStorage } from '../lib/portfolioStorage';
-import { formatMoney } from '../lib/portfolioFormatters';
 
 export default function FundAdvisor() {
   const [keyword, setKeyword] = useState('');
@@ -14,6 +13,24 @@ export default function FundAdvisor() {
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [holdings, setHoldings] = useState<PortfolioHolding[]>(() => loadPortfolioFromStorage());
+
+  const analyzeFundByCode = useCallback(async (code: string, name?: string) => {
+    setLoading(true);
+    setError(null);
+    setCandidates([]);
+    try {
+      const resp = await fetch(`/api/funds/${code}/snapshot`);
+      if (!resp.ok) throw new Error(`获取基金数据失败: ${resp.status}`);
+      const snapshot = (await resp.json()) as FundNavSnapshot;
+      if (name && !snapshot.fundName) snapshot.fundName = name;
+      const result = analyzeFund(snapshot, holdings);
+      setAnalysis(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '分析失败，请重试');
+    } finally {
+      setLoading(false);
+    }
+  }, [holdings]);
 
   const doSearch = useCallback(async () => {
     const q = keyword.trim();
@@ -38,25 +55,7 @@ export default function FundAdvisor() {
     } finally {
       setLoading(false);
     }
-  }, [keyword]);
-
-  const analyzeFundByCode = async (code: string, name?: string) => {
-    setLoading(true);
-    setError(null);
-    setCandidates([]);
-    try {
-      const resp = await fetch(`/api/funds/${code}/snapshot`);
-      if (!resp.ok) throw new Error(`获取基金数据失败: ${resp.status}`);
-      const snapshot = (await resp.json()) as FundNavSnapshot;
-      if (name && !snapshot.fundName) snapshot.fundName = name;
-      const result = analyzeFund(snapshot, holdings);
-      setAnalysis(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '分析失败，请重试');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [analyzeFundByCode, keyword]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') void doSearch();

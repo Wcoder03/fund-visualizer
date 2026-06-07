@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import BrandLogo from './BrandLogo';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -59,11 +60,10 @@ export default function Layout({ children }: LayoutProps) {
       >
         {/* Logo */}
         <div className="flex items-center gap-2 px-4 pt-4 pb-3">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white shadow-sm shadow-blue-500/20">
-            FA
-          </span>
+          <BrandLogo className="h-8 w-8 shrink-0 drop-shadow-sm" />
           <div className="min-w-0">
-            <span className="block truncate text-[14px] font-semibold text-slate-900 leading-tight">基金分析台</span>
+            <span className="block truncate text-[14px] font-semibold text-slate-900 leading-tight">基准星</span>
+            <span className="block truncate text-[10px] font-medium text-slate-400 leading-tight">FundScope</span>
           </div>
         </div>
 
@@ -80,16 +80,30 @@ export default function Layout({ children }: LayoutProps) {
               <div className="space-y-[2px]">
                 {group.items.map((item) => {
                   const isActive = item.path ? location.pathname === item.path : false;
-                  const Wrapper = item.path && !item.disabled ? Link : 'div';
+                  const linkClassName = `sidebar-link ${isActive ? 'active' : ''} ${item.disabled ? 'cursor-default opacity-40' : ''}`;
+
+                  if (item.path && !item.disabled) {
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.path}
+                        onClick={() => setSidebarOpen(false)}
+                        className={linkClassName}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  }
+
                   return (
-                    <Wrapper
+                    <div
                       key={item.label}
-                      {...(item.path && !item.disabled ? { to: item.path, onClick: () => setSidebarOpen(false) } : {})}
-                      className={`sidebar-link ${isActive ? 'active' : ''} ${item.disabled ? 'cursor-default opacity-40' : ''}`}
+                      className={linkClassName}
                     >
                       {item.icon}
                       <span>{item.label}</span>
-                    </Wrapper>
+                    </div>
                   );
                 })}
               </div>
@@ -106,7 +120,7 @@ export default function Layout({ children }: LayoutProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[12px] font-medium text-slate-700">当前用户</p>
-                <p className="text-[10px] text-slate-400">Fund Analyst</p>
+                <p className="text-[10px] text-slate-400">FundScope</p>
               </div>
               <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
             </div>

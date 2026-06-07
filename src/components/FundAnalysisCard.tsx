@@ -38,7 +38,7 @@ function EmptyState({ text }: { text: string }) {
 }
 
 export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
-  const { data, framework, performance, holdings, trends, scenarios, advice, score, extendedData } = result;
+  const { data, framework, performance, trends, scenarios, advice, score, extendedData } = result;
   const [detailsVisible, setDetailsVisible] = useState(false);
 
   const hasReturns = data.return1m !== 0 || data.return3m !== 0 || data.return1y !== 0;

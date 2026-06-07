@@ -260,10 +260,7 @@ function analyzePortfolioRelation(
 }
 
 function generateRecommendation(
-  score: number,
-  fundType: string,
-  dailyChange: number | undefined,
-  alreadyHeld: boolean
+  score: number
 ): FundAnalysisResult['recommendation'] {
   if (score >= 7) {
     return {
@@ -303,7 +300,7 @@ export function analyzeFund(
   const cons = generateCons(snapshot, fundType, dailyChange);
   const { suitableFor, notSuitableFor } = generateSuitability(fundType, riskLevel);
   const portfolioRelation = analyzePortfolioRelation(snapshot, holdings);
-  const recommendation = generateRecommendation(scoreResult.total, fundType, dailyChange, portfolioRelation.alreadyHeld);
+  const recommendation = generateRecommendation(scoreResult.total);
 
   const keyMetrics: FundAnalysisResult['keyMetrics'] = [
     { label: '当前净值', value: nav ? nav.toFixed(4) : '暂无数据', highlight: true },

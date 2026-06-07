@@ -6,7 +6,6 @@ import PortfolioHoldingDetail from './PortfolioHoldingDetail';
 import ProfitLossValue from './ProfitLossValue';
 import { calculateNextDcaDate, calculatePortfolioProfitLoss } from '../lib/portfolioCalculator';
 import { getDisplayNav } from '../lib/marketStatus';
-import { navStatusLabel } from '../lib/navStatusText';
 import { formatMoney, formatNav, formatNumber } from '../lib/portfolioFormatters';
 import type { DcaFrequency, FundNavSnapshot, PortfolioHolding, PortfolioProfitLoss } from '../types/portfolio';
 
