@@ -98,7 +98,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
   return (
     <section className="ui-card overflow-hidden">
       <div className="flex items-start justify-between border-b border-slate-100 px-7 py-5">
-        <SectionHeading eyebrow="Position Review" title="持仓分析" />
+        <SectionHeading title="持仓分析" />
         <span className="mt-1 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 bg-blue-50 text-blue-600 ring-blue-200/60">
           {holdings.length} 只基金
         </span>

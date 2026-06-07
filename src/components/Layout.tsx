@@ -63,8 +63,7 @@ export default function Layout({ children }: LayoutProps) {
             FA
           </span>
           <div className="min-w-0">
-            <span className="block truncate text-[13px] font-semibold text-slate-900 leading-tight">基金分析台</span>
-            <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-slate-400 mt-px">Fund Analysis</span>
+            <span className="block truncate text-[14px] font-semibold text-slate-900 leading-tight">基金分析台</span>
           </div>
         </div>
 

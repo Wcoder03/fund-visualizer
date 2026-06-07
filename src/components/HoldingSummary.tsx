@@ -90,7 +90,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
     <section className="ui-card overflow-hidden">
       {/* Header */}
       <div className="flex items-start justify-between border-b border-slate-100 px-7 py-5">
-        <SectionHeading eyebrow="Portfolio Summary" title="持仓总览" />
+        <SectionHeading title="持仓总览" />
         <span className={`mt-1 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ${statusColor}`}>
           {statusText}
         </span>
