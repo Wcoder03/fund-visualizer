@@ -253,23 +253,23 @@ export default function PortfolioHoldingsTable({
                     </div>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-semibold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.marketValue)}</p>
+                    <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.marketValue)}</p>
                     <p className="mt-0.5 text-[12px] text-slate-400">份额 {formatNumber(row.profit.calculatedHoldingShares, 4)}</p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-semibold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.costAmount)}</p>
+                    <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.costAmount)}</p>
                     <p className="mt-0.5 text-[12px] text-slate-400">成本净值 {formatNav(row.profit.inferredCostNav)}</p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-semibold text-slate-900 leading-6 tabular-nums">{formatNav(row.displayNav)}</p>
+                    <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatNav(row.displayNav)}</p>
                     <p className="mt-0.5 text-[12px] text-slate-400">{row.navDate || '--'}</p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-semibold leading-6 tabular-nums"><ProfitLossValue value={dailyValue} type="money" /></p>
+                    <p className="text-[15px] font-bold leading-6 tabular-nums"><ProfitLossValue value={dailyValue} type="money" /></p>
                     <p className="mt-0.5 text-[12px]"><ProfitLossValue value={dailyRate} type="rate" /></p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
-                    <p className="text-[15px] font-semibold leading-6 tabular-nums"><ProfitLossValue value={row.profit.totalProfitLoss} type="money" /></p>
+                    <p className="text-[15px] font-bold leading-6 tabular-nums"><ProfitLossValue value={row.profit.totalProfitLoss} type="money" /></p>
                     <p className="mt-0.5 text-[12px]"><ProfitLossValue value={row.profit.totalProfitLossRate} type="rate" /></p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top text-[14px] font-medium text-slate-600 tabular-nums">{row.profit.holdingDays}</td>
