@@ -80,17 +80,6 @@ export default function Comparison() {
             <p className="mt-2 text-[13px] leading-[1.7] text-blue-100/50">
               基于持仓金额、持有收益和基金净值数据计算当前市值、当日收益与定投摘要。
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-2.5 py-1 text-[11px] font-medium text-white/70 ring-1 ring-white/10 backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/40" />
-                {snapshotsLoading ? '净值刷新中' : hasFallback ? '部分演示数据' : holdings.length > 0 ? '数据已同步' : '等待添加持仓'}
-              </span>
-              {lastUpdatedAt && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/40">
-                  {lastUpdatedAt}
-                </span>
-              )}
-            </div>
           </div>
 
           {/* Right: glass stat cards */}
