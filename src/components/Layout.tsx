@@ -57,11 +57,11 @@ export default function Layout({ children }: LayoutProps) {
   const updateTime = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f5f7fb]">
+    <div className="flex h-screen overflow-hidden bg-[#f6f8fb]">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -74,23 +74,23 @@ export default function Layout({ children }: LayoutProps) {
       >
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-4 pt-5 pb-4">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white shadow-md shadow-blue-600/25">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white shadow-sm shadow-blue-500/20">
             FA
           </span>
           <div>
-            <span className="block text-[13px] font-semibold text-white/90 leading-tight">基金分析台</span>
-            <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-blue-300/40 mt-px">Fund Analysis</span>
+            <span className="block text-[13px] font-semibold text-slate-900 leading-tight">基金分析台</span>
+            <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-slate-400 mt-px">Fund Analysis</span>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+        <div className="mx-3 h-px bg-slate-100" />
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-2.5 pt-3 pb-2">
           {navGroups.map((group, gi) => (
             <div key={group.title} className={gi > 0 ? 'mt-[16px]' : ''}>
-              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/[0.28]">
+              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">
                 {group.title}
               </p>
               <div className="space-y-[2px]">
@@ -115,16 +115,16 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Bottom user card */}
         <div className="px-2.5 pb-3">
-          <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-3 py-2.5">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-blue-500/30 to-indigo-500/30 text-[10px] font-bold text-blue-200/80">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-indigo-500 text-[10px] font-bold text-white shadow-sm shadow-blue-500/15">
                 U
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[12px] font-medium text-white/70">当前用户</p>
-                <p className="text-[10px] text-white/25">Fund Analyst</p>
+                <p className="truncate text-[12px] font-medium text-slate-700">当前用户</p>
+                <p className="text-[10px] text-slate-400">Fund Analyst</p>
               </div>
-              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/40" />
+              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main content area */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 flex h-[64px] items-center justify-between border-b border-slate-200/60 bg-white/90 px-5 backdrop-blur-lg lg:px-7">
+        <header className="sticky top-0 z-30 flex h-[64px] items-center justify-between border-b border-[#e6ecf5] bg-white px-5 lg:px-7">
           {/* Left: page context */}
           <div className="flex items-center gap-3">
             <button
@@ -146,7 +146,7 @@ export default function Layout({ children }: LayoutProps) {
               </svg>
             </button>
             <div className="hidden sm:block">
-              <p className="text-[15px] font-semibold text-slate-800">{pageTitle.label}</p>
+              <p className="text-[15px] font-semibold text-slate-900">{pageTitle.label}</p>
             </div>
           </div>
 
@@ -154,7 +154,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex items-center gap-3">
             {/* Sync status */}
             <div className="hidden items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 md:flex">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/40" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               <span className="text-[12px] font-medium text-emerald-700">数据已同步</span>
             </div>
 
@@ -165,7 +165,7 @@ export default function Layout({ children }: LayoutProps) {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 text-[12px] font-medium text-slate-500 transition-colors hover:border-blue-300 hover:text-blue-600"
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-[12px] font-medium text-slate-500 transition-colors hover:border-blue-300 hover:text-blue-600"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
@@ -189,7 +189,7 @@ export default function Layout({ children }: LayoutProps) {
             </button>
 
             {/* User avatar */}
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-[11px] font-bold text-white shadow-sm shadow-blue-500/20">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-[11px] font-bold text-white shadow-sm">
               U
             </div>
           </div>
