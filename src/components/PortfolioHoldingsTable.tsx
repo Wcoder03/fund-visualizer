@@ -169,14 +169,14 @@ export default function PortfolioHoldingsTable({
     <div className="ui-card overflow-x-auto">
       <table className="w-full border-collapse text-left">
         <colgroup>
-          <col style={{ width: '22%' }} />
+          <col style={{ width: '20%' }} />
           <col style={{ width: '12%' }} />
           <col style={{ width: '12%' }} />
           <col style={{ width: '11%' }} />
           <col style={{ width: '11%' }} />
           <col style={{ width: '12%' }} />
           <col style={{ width: '8%' }} />
-          <col style={{ width: '7%' }} />
+          <col style={{ width: '9%' }} />
           <col style={{ width: '5%' }} />
         </colgroup>
         <thead>
