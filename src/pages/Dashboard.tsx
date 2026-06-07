@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Disclaimer from '../components/Disclaimer';
 import FundAnalysisCard from '../components/FundAnalysisCard';
 import FundComparisonTable from '../components/FundComparisonTable';
+import SectionHeading from '../components/SectionHeading';
 import { usePortfolioSnapshots } from '../hooks/usePortfolioSnapshots';
 import { runFundAnalysis } from '../lib/fundAnalyzer';
 import { formatMoney, formatRate } from '../lib/portfolioFormatters';
@@ -95,17 +96,14 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
         : '仓位较分散';
 
   return (
-    <section className="ui-card p-5 sm:p-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Position Review</p>
-          <h2 className="mt-1 text-2xl font-semibold text-slate-950">持仓分析</h2>
-          <p className="mt-1 text-sm text-slate-500">按"我的持仓"中的持有金额、成本金额和持有收益汇总。</p>
-        </div>
-        <span className="w-fit rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+    <section className="ui-card overflow-hidden">
+      <div className="flex items-start justify-between border-b border-slate-100 px-7 py-5">
+        <SectionHeading eyebrow="Position Review" title="持仓分析" />
+        <span className="mt-1 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 bg-blue-50 text-blue-600 ring-blue-200/60">
           {holdings.length} 只基金
         </span>
       </div>
+      <div className="p-5 sm:p-6">
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <div className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
@@ -170,6 +168,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
             <p>{stats.largestWeight !== null && stats.largestWeight >= 0.45 ? '最大单只基金占比较高，分析结论需要优先关注该基金风险。' : '当前仓位没有明显单只过度集中。'}</p>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import ProfitLossValue from './ProfitLossValue';
+import SectionHeading from './SectionHeading';
 import { calculatePortfolioProfitLoss } from '../lib/portfolioCalculator';
 import { formatMoney, formatRate } from '../lib/portfolioFormatters';
 import type { FundNavSnapshot, PortfolioHolding } from '../types/portfolio';
@@ -88,12 +89,9 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
   return (
     <section className="ui-card overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-100 px-7 py-5">
-        <div>
-          <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-blue-600">Portfolio Summary</p>
-          <h2 className="mt-0.5 text-[26px] font-bold leading-tight text-slate-900">持仓总览</h2>
-        </div>
-        <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ${statusColor}`}>
+      <div className="flex items-start justify-between border-b border-slate-100 px-7 py-5">
+        <SectionHeading eyebrow="Portfolio Summary" title="持仓总览" />
+        <span className={`mt-1 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ${statusColor}`}>
           {statusText}
         </span>
       </div>
