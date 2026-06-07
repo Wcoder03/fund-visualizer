@@ -74,15 +74,13 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
 
   const emptyVal = <span className="text-slate-300">--</span>;
 
-  const valueCls = 'text-[28px] font-bold tracking-tight text-slate-900 tabular-nums';
-
   const stats: StatItem[] = [
     { label: '总持仓成本', value: formatMoney(totalCost) || emptyVal, icon: iconCost, color: 'from-blue-500 to-blue-600' },
     { label: '当前总市值', value: formatMoney(totalValue) || emptyVal, icon: iconValue, color: 'from-indigo-500 to-indigo-600' },
-    { label: '持有收益', value: totalProfit !== null ? <ProfitLossValue value={totalProfit} type="money" className={valueCls} /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
-    { label: '持有收益率', value: totalRate !== null ? <ProfitLossValue value={totalRate} type="rate" className={valueCls} /> : emptyVal, icon: iconRate, accent: true, color: 'from-pink-500 to-pink-600' },
-    { label: '今日收益', value: dailyProfit !== null ? <ProfitLossValue value={dailyProfit} type="money" className={valueCls} /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },
-    { label: '今日收益率', value: dailyRate !== null ? <ProfitLossValue value={dailyRate} type="rate" className={valueCls} /> : emptyVal, icon: iconDailyRate, accent: true, color: 'from-yellow-500 to-amber-500' },
+    { label: '持有收益', value: totalProfit !== null ? <ProfitLossValue value={totalProfit} type="money" /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
+    { label: '持有收益率', value: totalRate !== null ? <ProfitLossValue value={totalRate} type="rate" /> : emptyVal, icon: iconRate, accent: true, color: 'from-pink-500 to-pink-600' },
+    { label: '今日收益', value: dailyProfit !== null ? <ProfitLossValue value={dailyProfit} type="money" /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },
+    { label: '今日收益率', value: dailyRate !== null ? <ProfitLossValue value={dailyRate} type="rate" /> : emptyVal, icon: iconDailyRate, accent: true, color: 'from-yellow-500 to-amber-500' },
     { label: '基金数量', value: `${holdings.length} 只`, icon: iconFund, color: 'from-sky-500 to-cyan-500' },
     { label: '定投计划', value: `${dcaCount} 个`, icon: iconDca, color: 'from-violet-500 to-purple-500' },
   ];
@@ -90,13 +88,12 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
   return (
     <section className="ui-card overflow-hidden">
       {/* Header */}
-      <div className="flex items-start justify-between border-b border-slate-100 px-7 py-6">
+      <div className="flex items-center justify-between border-b border-slate-100 px-7 py-5">
         <div>
           <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-blue-600">Portfolio Summary</p>
-          <h2 className="mt-1 text-[28px] font-bold leading-tight text-slate-900">持仓总览</h2>
-          <p className="mt-1.5 text-[15px] leading-6 text-slate-500">基于"我的持仓"中的持有金额、成本金额和持有收益汇总。</p>
+          <h2 className="mt-0.5 text-[26px] font-bold leading-tight text-slate-900">持仓总览</h2>
         </div>
-        <span className={`mt-1 shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ${statusColor}`}>
+        <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ${statusColor}`}>
           {statusText}
         </span>
       </div>
@@ -106,7 +103,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
         {stats.map((stat, i) => (
           <div
             key={stat.label}
-            className={`group relative flex flex-col justify-center px-7 py-6 transition-colors hover:bg-slate-50/50 ${
+            className={`group relative flex flex-col justify-center px-7 py-5 transition-colors hover:bg-slate-50/50 ${
               i % 4 !== 3 ? 'border-r border-slate-100/80' : ''
             } ${i < 4 ? 'border-b border-slate-100/80' : ''}`}
           >
@@ -116,7 +113,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
               </span>
               <span className="text-[15px] font-medium text-slate-500">{stat.label}</span>
             </div>
-            <div className="mt-4 pl-[46px]" style={{ letterSpacing: '-0.02em' }}>
+            <div className="mt-3.5 pl-[46px] text-[24px] font-bold leading-8 tracking-tight text-slate-900 tabular-nums" style={{ letterSpacing: '-0.02em' }}>
               {stat.value}
             </div>
           </div>
