@@ -55,17 +55,14 @@ export default function FundAnalysisCard({ result }: FundAnalysisCardProps) {
       <header className="border-b border-slate-100 px-5 py-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[14px] font-medium text-slate-500 tabular-nums">{data.code}</span>
+            <h3 className="text-[17px] font-bold text-slate-900 truncate">{data.name}</h3>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px] text-slate-400">
+              <span className="font-medium tabular-nums">{data.code}</span>
               <RiskBadge level={data.riskLevel} />
-              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-600 ring-1 ring-blue-200/60">{data.type}</span>
+              <span className="rounded-full bg-blue-50 px-1.5 py-px text-[11px] font-medium text-blue-600 ring-1 ring-blue-200/60">{data.type}</span>
+              {data.company && <><span className="text-slate-300">·</span><span>{data.company}</span></>}
+              {data.coreDirection && <><span className="text-slate-300">·</span><span>{data.coreDirection}</span></>}
             </div>
-            <h3 className="mt-1.5 text-[17px] font-bold text-slate-900">{data.name}</h3>
-            <p className="mt-0.5 text-[13px] text-slate-400">
-              {data.company || '基金公司信息待更新'}
-              {data.manager ? ` · ${data.manager}` : ''}
-              {data.coreDirection ? ` · ${data.coreDirection}` : ''}
-            </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-center">

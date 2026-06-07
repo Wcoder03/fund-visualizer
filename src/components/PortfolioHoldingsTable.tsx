@@ -353,11 +353,10 @@ export default function PortfolioHoldingsTable({
                   {/* 基金 */}
                   <td className="px-3 py-3 align-middle">
                     <p className="truncate text-[15px] font-semibold text-slate-900 leading-[22px]">{row.displayName}</p>
-                    <div className="mt-0.5 flex items-center gap-2">
-                      <span className="whitespace-nowrap text-[13px] text-slate-400 font-medium">{row.holding.fundCode}</span>
-                      {row.profit.sharesEstimated && <span className="whitespace-nowrap rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-medium text-orange-600 ring-1 ring-orange-200/60">份额估算</span>}
-                    </div>
-                    <div className="mt-1 flex gap-2 text-[13px] text-slate-400">
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px] text-slate-400">
+                      <span className="font-medium tabular-nums">{row.holding.fundCode}</span>
+                      {row.profit.sharesEstimated && <span className="rounded-full bg-orange-50 px-1.5 py-px text-[11px] font-medium text-orange-600 ring-1 ring-orange-200/60">份额估算</span>}
+                      <span className="text-slate-300">·</span>
                       <button type="button" onClick={() => { setExpandedId(isExpanded ? null : row.holding.id); setEditingId(null); }} className={`whitespace-nowrap font-medium transition-colors ${isExpanded ? 'text-blue-600' : 'hover:text-blue-600'}`}>详情</button>
                       <button type="button" onClick={openEdit} className={`whitespace-nowrap font-medium transition-colors ${isEditing ? 'text-blue-600' : 'hover:text-blue-600'}`}>编辑</button>
                       <button type="button" onClick={() => onDelete(row.holding.id)} className="whitespace-nowrap font-medium hover:text-red-500 transition-colors">删除</button>
