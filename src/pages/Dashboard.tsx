@@ -104,8 +104,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
         </span>
       </div>
       <div className="p-5 sm:p-6">
-
-      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <div className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
           <p className="text-xs font-medium text-slate-500">当前持仓金额</p>
           <p className="mt-1 text-2xl font-semibold text-slate-950">{formatMoney(stats.totalHoldingAmount)}</p>
