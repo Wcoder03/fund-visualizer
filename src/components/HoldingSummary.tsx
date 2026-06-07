@@ -73,7 +73,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
   // 定投计划 — repeat/循环
   const iconDca = <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.7}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" /></svg>;
 
-  const emptyVal = <span className="text-slate-300">--</span>;
+  const emptyVal = <span className="text-slate-400">--</span>;
 
   const stats: StatItem[] = [
     { label: '总持仓成本', value: formatMoney(totalCost) || emptyVal, icon: iconCost, color: 'from-blue-500 to-blue-600' },
@@ -109,9 +109,9 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
               <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${stat.color} text-white shadow-sm`}>
                 {stat.icon}
               </span>
-              <span className="text-[15px] font-medium text-slate-500">{stat.label}</span>
+              <span className="text-[16px] font-medium text-slate-600 leading-6">{stat.label}</span>
             </div>
-            <div className="mt-3.5 pl-[46px] text-[24px] font-bold leading-8 tracking-tight text-slate-900 tabular-nums" style={{ letterSpacing: '-0.02em' }}>
+            <div className="mt-3 pl-[46px] text-[24px] font-bold leading-8 tracking-tight text-slate-900 tabular-nums" style={{ letterSpacing: '-0.02em' }}>
               {stat.value}
             </div>
           </div>
