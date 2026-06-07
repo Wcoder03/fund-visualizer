@@ -42,15 +42,15 @@ interface RowModel {
   displayName: string;
 }
 
-const columns: Array<{ field?: SortField; label: string }> = [
+const columns: Array<{ field?: SortField; label: string; align?: 'left' | 'center' }> = [
   { field: 'fundName', label: '基金' },
   { field: 'marketValue', label: '当前金额' },
   { label: '成本金额' },
   { label: '当前净值' },
   { field: 'dailyProfitLoss', label: '当日收益' },
   { field: 'totalProfitLoss', label: '持有收益' },
-  { field: 'holdingDays', label: '持有天数' },
-  { label: '数据状态' },
+  { field: 'holdingDays', label: '持有天数', align: 'center' },
+  { label: '数据状态', align: 'center' },
   { label: '定投' },
 ];
 
@@ -236,7 +236,7 @@ export default function PortfolioHoldingsTable({
         <thead>
           <tr className="border-b border-slate-200/80 bg-[#f8fafc]">
             {columns.map((column) => (
-              <th key={column.label} className="whitespace-nowrap px-4 py-3 text-left text-[13px] font-semibold text-slate-500 leading-5">
+              <th key={column.label} className={`whitespace-nowrap px-4 py-3 text-[13px] font-semibold text-slate-500 leading-5 ${column.align === 'center' ? 'text-center' : 'text-left'}`}>
                 {column.field ? (
                   <button type="button" onClick={() => onSortChange(column.field as SortField)} className="inline-flex items-center gap-1 hover:text-blue-600 transition-colors">
                     {column.label}
@@ -374,10 +374,10 @@ export default function PortfolioHoldingsTable({
                     <p className="mt-0.5 whitespace-nowrap text-[12px] leading-4"><ProfitLossValue value={row.profit.totalProfitLossRate} type="rate" /></p>
                   </td>
                   {/* 持有天数 */}
-                  <td className="whitespace-nowrap px-4 py-3 align-middle text-[14px] font-medium text-slate-600 tabular-nums">{row.profit.holdingDays}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-center align-middle text-[14px] font-medium text-slate-600 tabular-nums">{row.profit.holdingDays}</td>
                   {/* 数据状态 */}
-                  <td className="px-4 py-3 align-middle">
-                    <div className="flex flex-col gap-[3px]">
+                  <td className="px-4 py-3 text-center align-middle">
+                    <div className="inline-flex flex-col items-center gap-[3px]">
                       <NavStatusBadge status={row.snapshot?.marketStatus} />
                       <DataStatusBadge snapshot={row.snapshot} error={row.error} />
                       {row.error && <button type="button" onClick={() => onRetry?.(row.holding.fundCode)} className="text-[12px] text-blue-600 font-medium hover:text-blue-700 transition-colors">重试</button>}
