@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import FundDetail from './pages/FundDetail';
+import FundSearch from './pages/FundSearch';
 import Comparison from './pages/Comparison';
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Comparison />} />
+          <Route path="/fund-search" element={<FundSearch />} />
           <Route path="/analysis" element={<Dashboard />} />
           <Route path="/fund/:code" element={<FundDetail />} />
           <Route path="/comparison" element={<Comparison />} />
