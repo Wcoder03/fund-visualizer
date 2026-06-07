@@ -105,25 +105,25 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
       </div>
       <div className="p-5 sm:p-6">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
-          <p className="text-xs font-medium text-slate-500">当前持仓金额</p>
-          <p className="mt-1 text-2xl font-semibold text-slate-950">{formatMoney(stats.totalHoldingAmount)}</p>
+        <div className="ui-card-subtle rounded-xl px-5 py-4">
+          <p className="text-[16px] font-medium text-slate-600">当前持仓金额</p>
+          <p className="mt-2 text-[24px] font-bold tracking-tight text-slate-900 tabular-nums" style={{ letterSpacing: '-0.02em' }}>{formatMoney(stats.totalHoldingAmount)}</p>
         </div>
-        <div className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
-          <p className="text-xs font-medium text-slate-500">成本金额</p>
-          <p className="mt-1 text-2xl font-semibold text-slate-950">{formatMoney(stats.totalCost)}</p>
+        <div className="ui-card-subtle rounded-xl px-5 py-4">
+          <p className="text-[16px] font-medium text-slate-600">成本金额</p>
+          <p className="mt-2 text-[24px] font-bold tracking-tight text-slate-900 tabular-nums" style={{ letterSpacing: '-0.02em' }}>{formatMoney(stats.totalCost)}</p>
         </div>
-        <div className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
-          <p className="text-xs font-medium text-slate-500">持有收益</p>
-          <p className={`mt-1 text-2xl font-semibold ${stats.totalProfit >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+        <div className="ui-card-subtle rounded-xl px-5 py-4">
+          <p className="text-[16px] font-medium text-slate-600">持有收益</p>
+          <p className={`mt-2 text-[24px] font-bold tracking-tight tabular-nums ${stats.totalProfit >= 0 ? 'text-red-600' : 'text-green-600'}`} style={{ letterSpacing: '-0.02em' }}>
             {formatMoney(stats.totalProfit, true)}
           </p>
-          <p className="mt-1 text-xs text-slate-500">{formatRate(stats.totalProfitRate, true)}</p>
+          <p className="mt-1 text-[13px] font-medium text-slate-400 tabular-nums">{formatRate(stats.totalProfitRate, true)}</p>
         </div>
-        <div className="ui-card-subtle card-hover rounded-2xl px-4 py-3">
-          <p className="text-xs font-medium text-slate-500">仓位集中度</p>
-          <p className="mt-1 text-2xl font-semibold text-slate-950">{concentrationText}</p>
-          <p className="mt-1 truncate text-xs text-slate-500">
+        <div className="ui-card-subtle rounded-xl px-5 py-4">
+          <p className="text-[16px] font-medium text-slate-600">仓位集中度</p>
+          <p className="mt-2 text-[24px] font-bold tracking-tight text-slate-900" style={{ letterSpacing: '-0.02em' }}>{concentrationText}</p>
+          <p className="mt-1 truncate text-[13px] font-medium text-slate-400">
             最大仓位 {stats.largest ? `${stats.largestName} ${formatRate(stats.largestWeight)}` : '--'}
           </p>
         </div>
@@ -133,25 +133,25 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <table className="w-full table-fixed text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold text-slate-500">
-                <th className="px-4 py-3">基金</th>
-                <th className="px-4 py-3 text-right">持有金额</th>
-                <th className="px-4 py-3 text-right">占比</th>
-                <th className="px-4 py-3 text-right">持有收益</th>
+              <tr className="border-b border-slate-100 bg-[#f8fafc] text-left text-[13px] font-semibold text-slate-500">
+                <th className="px-4 py-2.5">基金</th>
+                <th className="px-4 py-2.5 text-right">持有金额</th>
+                <th className="px-4 py-2.5 text-right">占比</th>
+                <th className="px-4 py-2.5 text-right">持有收益</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100/80">
               {stats.rows.map((row) => (
-                <tr key={row.id} className="hover:bg-blue-50/35">
-                  <td className="px-4 py-3">
-                    <p className="truncate font-semibold text-slate-950">{row.name}</p>
-                    <p className="mt-1 text-[13px] font-medium text-slate-500 tabular-nums">{row.code}</p>
+                <tr key={row.id} className="hover:bg-slate-50/50">
+                  <td className="px-4 py-3 align-middle">
+                    <p className="truncate text-[15px] font-semibold text-slate-900">{row.name}</p>
+                    <p className="mt-0.5 text-[13px] font-medium text-slate-400 tabular-nums">{row.code}</p>
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-950">{formatMoney(row.amount)}</td>
-                  <td className="px-4 py-3 text-right text-slate-600">{formatRate(row.weight)}</td>
-                  <td className={`px-4 py-3 text-right font-semibold ${row.profit >= 0 ? 'text-red-600' : 'text-green-600'}`}>
-                    {formatMoney(row.profit, true)}
-                    <p className="mt-1 text-xs font-normal">{formatRate(row.profitRate, true)}</p>
+                  <td className="px-4 py-3 text-right align-middle text-[15px] font-bold text-slate-900 tabular-nums">{formatMoney(row.amount)}</td>
+                  <td className="px-4 py-3 text-right align-middle text-[14px] font-medium text-slate-600 tabular-nums">{formatRate(row.weight)}</td>
+                  <td className="px-4 py-3 text-right align-middle">
+                    <p className={`text-[15px] font-bold tabular-nums ${row.profit >= 0 ? 'text-red-600' : 'text-green-600'}`}>{formatMoney(row.profit, true)}</p>
+                    <p className="mt-0.5 text-[12px] font-medium tabular-nums text-slate-400">{formatRate(row.profitRate, true)}</p>
                   </td>
                 </tr>
               ))}
