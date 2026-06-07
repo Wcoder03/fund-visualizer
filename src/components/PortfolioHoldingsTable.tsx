@@ -89,12 +89,14 @@ function toDcaDraft(holding: PortfolioHolding): DcaPlanDraft {
 
 function DcaInlineEditor({
   holding,
+  displayName,
   value,
   onChange,
   onCancel,
   onSave,
 }: {
   holding: PortfolioHolding;
+  displayName: string;
   value: DcaPlanDraft;
   onChange: (value: DcaPlanDraft) => void;
   onCancel: () => void;
@@ -105,7 +107,7 @@ function DcaInlineEditor({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <p className="text-[14px] font-semibold text-slate-900">定投设置</p>
-          <p className="mt-0.5 text-[12px] text-slate-400">{holding.fundCode} · {holding.fundName}</p>
+          <p className="mt-0.5 text-[12px] text-slate-400">{holding.fundCode} · {displayName}</p>
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={onCancel} className="ui-button-secondary rounded-lg px-3 py-1.5 text-[12px] font-medium">取消</button>
@@ -406,6 +408,7 @@ export default function PortfolioHoldingsTable({
                     <td colSpan={columns.length} className="p-0">
                       <DcaInlineEditor
                         holding={row.holding}
+                        displayName={row.displayName}
                         value={dcaDraft}
                         onChange={setDcaDraft}
                         onCancel={() => {
