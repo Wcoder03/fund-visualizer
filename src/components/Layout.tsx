@@ -37,7 +37,7 @@ export default function Layout({ children }: LayoutProps) {
           </span>
           <div>
             <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-300/70">Fund Analysis</span>
-            <span className="block text-[15px] font-bold text-white">基金趋势研究台</span>
+            <span className="block text-[15px] font-bold text-white">基金分析台</span>
           </div>
         </div>
 
