@@ -254,11 +254,11 @@ export default function PortfolioHoldingsTable({
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
                     <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.marketValue)}</p>
-                    <p className="mt-0.5 text-[12px] text-slate-400">份额 {formatNumber(row.profit.calculatedHoldingShares, 4)}</p>
+                    <p className="mt-0.5 text-[12px] text-slate-400">份额 {formatNumber(row.profit.calculatedHoldingShares, 2)}</p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
                     <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.costAmount)}</p>
-                    <p className="mt-0.5 text-[12px] text-slate-400">成本净值 {formatNav(row.profit.inferredCostNav)}</p>
+                    <p className="mt-0.5 text-[12px] text-slate-400">成本净值 {formatNumber(row.profit.inferredCostNav, 2)}</p>
                   </td>
                   <td className="px-3 py-[14px] text-right align-top">
                     <p className="text-[15px] font-bold text-slate-900 leading-6 tabular-nums">{formatNav(row.displayNav)}</p>
