@@ -100,7 +100,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Position Review</p>
           <h2 className="mt-1 text-2xl font-semibold text-slate-950">持仓分析</h2>
-          <p className="mt-1 text-sm text-slate-500">按“我的持仓”中的持有金额、成本金额和持有收益汇总。</p>
+          <p className="mt-1 text-sm text-slate-500">按"我的持仓"中的持有金额、成本金额和持有收益汇总。</p>
         </div>
         <span className="w-fit rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
           {holdings.length} 只基金
@@ -166,7 +166,7 @@ function HoldingAnalysis({ holdings, snapshotsByFundCode }: HoldingAnalysisProps
           <p className="text-sm font-semibold text-slate-950">组合提示</p>
           <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
             <p>盈利基金 {stats.profitCount} 只，亏损基金 {stats.lossCount} 只。</p>
-            <p>已启用定投 {stats.dcaCount} 只，可在“我的持仓”中继续调整频率和金额。</p>
+            <p>已启用定投 {stats.dcaCount} 只，可在"我的持仓"中继续调整频率和金额。</p>
             <p>{stats.largestWeight !== null && stats.largestWeight >= 0.45 ? '最大单只基金占比较高，分析结论需要优先关注该基金风险。' : '当前仓位没有明显单只过度集中。'}</p>
           </div>
         </div>
@@ -231,26 +231,26 @@ export default function Dashboard() {
   }, [analysis, fundInputs.length]);
 
   return (
-    <div className=”space-y-5 animate-fade-in”>
+    <div className="space-y-5 animate-fade-in">
       {/* Hero Banner */}
-      <section className=”relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a8f] via-[#2546a8] to-[#3b5ccc] p-6 text-white shadow-lg shadow-blue-600/15 lg:p-8”>
-        <div className=”pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5 blur-2xl” />
-        <div className=”pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10 blur-2xl” />
-        <div className=”pointer-events-none absolute right-8 top-6 hidden h-28 w-28 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm lg:block” />
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a8f] via-[#2546a8] to-[#3b5ccc] p-6 text-white shadow-lg shadow-blue-600/15 lg:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10 blur-2xl" />
+        <div className="pointer-events-none absolute right-8 top-6 hidden h-28 w-28 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm lg:block" />
 
-        <div className=”relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between”>
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className=”text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-200/80”>Analysis Workbench</p>
-            <h1 className=”mt-2 text-2xl font-bold tracking-tight sm:text-3xl”>基金趋势分析工作台</h1>
-            <p className=”mt-2 max-w-xl text-sm leading-6 text-blue-100/80”>
-              分析范围自动跟随”我的持仓”，结合持仓金额生成组合层面的趋势分析与横向比较。
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-200/80">Analysis Workbench</p>
+            <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">基金趋势分析工作台</h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100/80">
+              分析范围自动跟随"我的持仓"，结合持仓金额生成组合层面的趋势分析与横向比较。
             </p>
           </div>
-          <div className=”flex gap-3”>
+          <div className="flex gap-3">
             {headlineStats.map((stat) => (
-              <div key={stat.label} className=”rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 backdrop-blur-sm”>
-                <p className=”text-[10px] font-medium text-blue-200/70”>{stat.label}</p>
-                <p className=”mt-0.5 text-lg font-bold text-white”>{stat.value}</p>
+              <div key={stat.label} className="rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
+                <p className="text-[10px] font-medium text-blue-200/70">{stat.label}</p>
+                <p className="mt-0.5 text-lg font-bold text-white">{stat.value}</p>
               </div>
             ))}
           </div>
@@ -280,7 +280,7 @@ export default function Dashboard() {
       {holdings.length === 0 && !loading && !snapshotsLoading && (
         <section className="rounded-2xl border border-dashed border-blue-200 bg-white/80 p-10 text-center shadow-sm">
           <p className="text-sm font-semibold text-slate-700">当前没有可分析的持仓</p>
-          <p className="mt-2 text-sm text-slate-500">请先在“我的持仓”添加基金代码、持有金额和持有收益。</p>
+          <p className="mt-2 text-sm text-slate-500">请先在"我的持仓"添加基金代码、持有金额和持有收益。</p>
           <Link
             to="/"
             className="ui-button-primary mt-5 inline-flex rounded-xl px-4 py-2 text-sm font-semibold"
@@ -303,7 +303,7 @@ export default function Dashboard() {
 
           <div className="pt-1">
             <h2 className="text-lg font-semibold text-slate-950">单只基金分析</h2>
-            <p className="mt-1 text-sm text-slate-500">按“我的持仓”中的每只基金逐一生成类型识别、趋势判断、持仓拆解和风控建议。</p>
+            <p className="mt-1 text-sm text-slate-500">按"我的持仓"中的每只基金逐一生成类型识别、趋势判断、持仓拆解和风控建议。</p>
           </div>
 
           <div className="grid gap-5">
