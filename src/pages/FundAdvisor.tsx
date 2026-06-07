@@ -2,6 +2,9 @@ import { useCallback, useState } from 'react';
 import type { FundSearchResult } from '../types/fund';
 import type { PortfolioHolding } from '../types/portfolio';
 import { analyzeFund, type FundAnalysisResult } from '../lib/fundAdvisorService';
+import { fetchFundExtendedData } from '../lib/providers/eastmoneyProvider';
+import FundPerformanceBar from '../components/FundPerformanceBar';
+import FundTrendChart from '../components/FundTrendChart';
 import type { FundNavSnapshot } from '../types/portfolio';
 import { loadPortfolioFromStorage, savePortfolioToStorage } from '../lib/portfolioStorage';
 
@@ -19,11 +22,14 @@ export default function FundAdvisor() {
     setError(null);
     setCandidates([]);
     try {
-      const resp = await fetch(`/api/funds/${code}/snapshot`);
-      if (!resp.ok) throw new Error(`获取基金数据失败: ${resp.status}`);
-      const snapshot = (await resp.json()) as FundNavSnapshot;
+      const [snapshotResp, extendedData] = await Promise.all([
+        fetch(`/api/funds/${code}/snapshot`),
+        fetchFundExtendedData(code),
+      ]);
+      if (!snapshotResp.ok) throw new Error(`获取基金数据失败: ${snapshotResp.status}`);
+      const snapshot = (await snapshotResp.json()) as FundNavSnapshot;
       if (name && !snapshot.fundName) snapshot.fundName = name;
-      const result = analyzeFund(snapshot, holdings);
+      const result = analyzeFund(snapshot, holdings, extendedData);
       setAnalysis(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : '分析失败，请重试');
@@ -221,6 +227,28 @@ export default function FundAdvisor() {
                 ))}
               </div>
             </section>
+
+            {/* Performance Bar */}
+            {analysis.performance && (
+              <section className="ui-card p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400 mb-3">Performance</p>
+                <FundPerformanceBar
+                  return1m={analysis.performance.return1m}
+                  return3m={analysis.performance.return3m}
+                  return6m={analysis.performance.return6m}
+                  return1y={analysis.performance.return1y}
+                  dailyChange={analysis.performance.dailyChange}
+                  nav={analysis.performance.nav}
+                />
+              </section>
+            )}
+
+            {/* Trend Chart */}
+            {analysis.trendData && analysis.trendData.length > 1 && (
+              <section className="ui-card p-5">
+                <FundTrendChart data={analysis.trendData} fundName={analysis.overview.fundName} />
+              </section>
+            )}
 
             {/* Score + Recommendation */}
             <section className="ui-card flex flex-col p-5">

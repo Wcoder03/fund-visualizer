@@ -1,5 +1,6 @@
 import type { FundNavSnapshot } from '../types/portfolio';
 import type { PortfolioHolding } from '../types/portfolio';
+import type { FundExtendedData, FundTrendPoint } from '../types/fund';
 
 export interface FundAnalysisResult {
   // 基金概览
@@ -57,6 +58,20 @@ export interface FundAnalysisResult {
     complementarity: string;
     duplicateWarning?: string;
   };
+
+  // 收益表现
+  performance?: {
+    return1m?: number;
+    return3m?: number;
+    return6m?: number;
+    return1y?: number;
+    dailyChange?: number;
+    nav?: number;
+    navDate?: string;
+  };
+
+  // 走势数据
+  trendData?: FundTrendPoint[];
 }
 
 function identifyFundType(name: string): string {
@@ -289,12 +304,14 @@ function generateRecommendation(
 
 export function analyzeFund(
   snapshot: FundNavSnapshot,
-  holdings: PortfolioHolding[]
+  holdings: PortfolioHolding[],
+  extendedData?: FundExtendedData
 ): FundAnalysisResult {
   const fundType = identifyFundType(snapshot.fundName);
   const riskLevel = inferRiskLevel(fundType, snapshot.fundName);
   const dailyChange = snapshot.dailyChangeRate ?? snapshot.intradayChangeRate ?? undefined;
   const nav = snapshot.displayNav ?? snapshot.latestConfirmedNav ?? snapshot.currentNav;
+  const returnRates = extendedData?.returnRates;
 
   const scoreResult = calculateScore(snapshot, fundType);
   const pros = generatePros(snapshot, fundType, dailyChange);
@@ -336,5 +353,15 @@ export function analyzeFund(
     notSuitableFor,
     keyMetrics,
     portfolioRelation,
+    performance: {
+      return1m: returnRates?.return1n,
+      return3m: returnRates?.return3y,
+      return6m: returnRates?.return6y,
+      return1y: returnRates?.return1y,
+      dailyChange,
+      nav,
+      navDate: snapshot.navDate,
+    },
+    trendData: extendedData?.trendData,
   };
 }

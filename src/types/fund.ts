@@ -353,6 +353,13 @@ export interface FundPerformanceEvaluation {
   dimensions: { name: string; score: number }[];
 }
 
+// 走势数据点
+export interface FundTrendPoint {
+  date: string;
+  nav: number;
+  cumulativeReturn?: number;
+}
+
 // 扩展基金快照（包含 pingzhongdata 解析的额外数据）
 export interface FundExtendedData {
   managers: FundManagerInfo[];
@@ -361,4 +368,5 @@ export interface FundExtendedData {
   holderStructure?: FundHolderStructure;
   performanceEvaluation?: FundPerformanceEvaluation;
   stockPosition?: number;
+  trendData?: FundTrendPoint[];
 }

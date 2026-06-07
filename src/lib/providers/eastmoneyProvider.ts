@@ -302,6 +302,13 @@ export async function fetchFundExtendedData(fundCode: string): Promise<FundExten
     const positionsRaw = extractJsonVariable<[number, number][]>(text, 'Data_fundSharesPositions');
     const stockPosition = positionsRaw?.length ? positionsRaw[positionsRaw.length - 1]?.[1] : undefined;
 
+    // 走势数据（NAV历史）
+    const trendRaw = extractJsonVariable<Array<{ x: number; y: number }>>(text, 'Data_netWorthTrend');
+    const trendData = trendRaw?.map(item => ({
+      date: new Date(item.x).toISOString().slice(0, 10),
+      nav: item.y,
+    })) ?? [];
+
     return {
       managers,
       assetAllocation,
@@ -309,6 +316,7 @@ export async function fetchFundExtendedData(fundCode: string): Promise<FundExten
       holderStructure,
       performanceEvaluation,
       stockPosition,
+      trendData,
     };
   } catch {
     return { managers: [] };
