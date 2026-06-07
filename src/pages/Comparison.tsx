@@ -97,11 +97,11 @@ export default function Comparison() {
           <div className="flex gap-2.5">
             <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
               <p className="text-[10px] font-medium text-blue-200/40">基金数量</p>
-              <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">{holdings.length}</p>
+              <p className="mt-0.5 text-[22px] font-semibold tracking-tight text-white/90 tabular-nums">{holdings.length}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
               <p className="text-[10px] font-medium text-blue-200/40">定投计划</p>
-              <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">
+              <p className="mt-0.5 text-[22px] font-semibold tracking-tight text-white/90 tabular-nums">
                 {holdings.filter(h => h.dcaPlan?.enabled && h.dcaPlan.status !== 'paused').length}
               </p>
             </div>

@@ -67,10 +67,10 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
   const stats: StatItem[] = [
     { label: '总持仓成本', value: formatMoney(totalCost) || emptyVal, icon: iconCost, color: 'from-blue-500 to-blue-600' },
     { label: '当前总市值', value: formatMoney(totalValue) || emptyVal, icon: iconValue, color: 'from-indigo-500 to-indigo-600' },
-    { label: '持有收益', value: totalProfit !== null ? <ProfitLossValue value={totalProfit} type="money" className="text-[15px] font-bold" /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
-    { label: '持有收益率', value: totalRate !== null ? <ProfitLossValue value={totalRate} type="rate" className="text-[15px] font-bold" /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
-    { label: '今日收益', value: dailyProfit !== null ? <ProfitLossValue value={dailyProfit} type="money" className="text-[15px] font-bold" /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },
-    { label: '今日收益率', value: dailyRate !== null ? <ProfitLossValue value={dailyRate} type="rate" className="text-[15px] font-bold" /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },
+    { label: '持有收益', value: totalProfit !== null ? <ProfitLossValue value={totalProfit} type="money" className="text-[15px] font-semibold" /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
+    { label: '持有收益率', value: totalRate !== null ? <ProfitLossValue value={totalRate} type="rate" className="text-[15px] font-semibold" /> : emptyVal, icon: iconProfit, accent: true, color: 'from-rose-500 to-rose-600' },
+    { label: '今日收益', value: dailyProfit !== null ? <ProfitLossValue value={dailyProfit} type="money" className="text-[15px] font-semibold" /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },
+    { label: '今日收益率', value: dailyRate !== null ? <ProfitLossValue value={dailyRate} type="rate" className="text-[15px] font-semibold" /> : emptyVal, icon: iconDaily, accent: true, color: 'from-amber-500 to-orange-500' },
     { label: '基金数量', value: `${holdings.length} 只`, icon: iconFund, color: 'from-sky-500 to-cyan-500' },
     { label: '定投计划', value: `${dcaCount} 个`, icon: iconDca, color: 'from-violet-500 to-purple-500' },
   ];
@@ -103,7 +103,7 @@ export default function HoldingSummary({ holdings, snapshotsByFundCode = {}, las
               </span>
               <span className="text-[12px] font-medium text-slate-400">{stat.label}</span>
             </div>
-            <div className="mt-2 text-[16px] font-bold tracking-tight text-slate-900 tabular-nums">{stat.value}</div>
+            <div className="mt-2 text-[16px] font-semibold tracking-tight text-slate-900 tabular-nums">{stat.value}</div>
           </div>
         ))}
       </div>

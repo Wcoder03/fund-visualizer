@@ -250,7 +250,7 @@ export default function Dashboard() {
             {headlineStats.map((stat) => (
               <div key={stat.label} className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
                 <p className="text-[10px] font-medium text-blue-200/40">{stat.label}</p>
-                <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">{stat.value}</p>
+                <p className="mt-0.5 text-[22px] font-semibold tracking-tight text-white/90 tabular-nums">{stat.value}</p>
               </div>
             ))}
           </div>
