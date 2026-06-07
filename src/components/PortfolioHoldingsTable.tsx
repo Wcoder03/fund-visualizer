@@ -219,7 +219,7 @@ export default function PortfolioHoldingsTable({
   }
 
   return (
-    <div className="ui-card overflow-x-auto">
+    <div className="overflow-x-auto">
       <table className="w-full border-collapse text-left">
         <colgroup>
           <col style={{ width: '20%' }} />
