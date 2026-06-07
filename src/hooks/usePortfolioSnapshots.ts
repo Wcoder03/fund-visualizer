@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getMockNavSnapshot } from '../lib/mockNavSnapshots';
 import type { FundNavSnapshot, MarketStatus, PortfolioHolding } from '../types/portfolio';
 
 interface SnapshotState {
@@ -11,28 +10,13 @@ interface SnapshotState {
 }
 
 async function fetchSnapshot(fundCode: string, signal: AbortSignal): Promise<FundNavSnapshot> {
-  try {
-    const response = await fetch(`/api/funds/${fundCode}/snapshot`, { signal });
-    if (!response.ok) throw new Error(`获取 ${fundCode} 净值失败`);
-    const snapshot = (await response.json()) as FundNavSnapshot;
-    if (snapshot.dataStatus === 'error') {
-      throw new Error(snapshot.message || `基金 ${fundCode} 的净值数据暂不可用`);
-    }
-    return snapshot;
-  } catch (error) {
-    if (signal.aborted) throw error;
-    const fallback = getMockNavSnapshot(fundCode);
-    if (fallback) {
-      return {
-        ...fallback,
-        dataSource: 'mock',
-        dataStatus: 'fallback',
-        updatedAt: new Date().toISOString(),
-        message: 'API snapshot 获取失败，已切换到本地 mock fallback',
-      };
-    }
-    throw error;
+  const response = await fetch(`/api/funds/${fundCode}/snapshot`, { signal });
+  if (!response.ok) throw new Error(`获取 ${fundCode} 净值失败`);
+  const snapshot = (await response.json()) as FundNavSnapshot;
+  if (snapshot.dataStatus === 'error') {
+    throw new Error(snapshot.message || `基金 ${fundCode} 的净值数据暂不可用`);
   }
+  return snapshot;
 }
 
 export function usePortfolioSnapshots(holdings: PortfolioHolding[]): SnapshotState {

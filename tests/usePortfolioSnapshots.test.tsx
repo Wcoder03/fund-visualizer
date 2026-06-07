@@ -61,15 +61,14 @@ describe('usePortfolioSnapshots', () => {
     vi.unstubAllGlobals();
   });
 
-  it('uses local mock fallback when API fails for known fund', async () => {
+  it('records error when API fails for known fund', async () => {
     const fetchMock = vi.fn(() => Promise.resolve({ ok: false }));
     vi.stubGlobal('fetch', fetchMock);
     const holdings = [holding('1', '018173')];
 
     const { result } = renderHook(() => usePortfolioSnapshots(holdings));
-    await waitFor(() => expect(result.current.snapshotsByFundCode['018173']).toBeTruthy());
-    expect(result.current.snapshotsByFundCode['018173'].dataSource).toBe('mock');
-    expect(result.current.snapshotsByFundCode['018173'].dataStatus).toBe('fallback');
+    await waitFor(() => expect(result.current.errorsByFundCode['018173']).toBeTruthy());
+    expect(result.current.snapshotsByFundCode['018173']).toBeUndefined();
     vi.unstubAllGlobals();
   });
 });

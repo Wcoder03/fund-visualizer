@@ -18,12 +18,12 @@ describe('eastmoney parsing', () => {
 });
 
 describe('fundDataProvider fallback and API', () => {
-  it('falls back to mock snapshot when fetch fails', async () => {
+  it('returns error snapshot when API unavailable', async () => {
     serverCacheClear();
     vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('network'))));
     const snapshot = await getFundSnapshot('018173');
-    expect(snapshot.dataSource).toBe('mock');
-    expect(snapshot.dataStatus).toBe('fallback');
+    expect(snapshot.dataSource).toBe('unavailable');
+    expect(snapshot.dataStatus).toBe('error');
     vi.unstubAllGlobals();
   });
 
