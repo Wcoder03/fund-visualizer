@@ -156,7 +156,6 @@ export default function Layout({ children }: LayoutProps) {
             </button>
             <div className="hidden sm:block">
               <p className="text-[15px] font-semibold text-slate-800">{pageTitle.label}</p>
-              <p className="text-[11px] font-medium text-slate-400">{pageTitle.sub}</p>
             </div>
           </div>
 
