@@ -124,16 +124,12 @@ interface EditFormState {
 }
 
 function EditInlineEditor({
-  holding,
-  displayName,
   form,
   error,
   onChange,
   onCancel,
   onSave,
 }: {
-  holding: PortfolioHolding;
-  displayName: string;
   form: EditFormState;
   error: string;
   onChange: (form: EditFormState) => void;
@@ -141,46 +137,35 @@ function EditInlineEditor({
   onSave: () => void;
 }) {
   return (
-    <div className="border-t border-slate-200/80 bg-[#f8fafc] px-4 py-3.5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
-        {/* Left: fund info */}
-        <div className="min-w-0 shrink-0 lg:w-[200px]">
-          <p className="text-[14px] font-semibold text-slate-900 truncate">{displayName}</p>
-          <p className="mt-0.5 text-[12px] text-slate-400">{holding.fundCode}</p>
-        </div>
-
-        {/* Middle: form fields */}
-        <div className="flex flex-1 flex-wrap items-end gap-3">
-          <label className="text-[12px] font-medium text-slate-500">
-            持有金额
-            <input
-              type="number"
-              step="0.01"
-              value={form.holdingAmount}
-              onChange={(e) => onChange({ ...form, holdingAmount: e.target.value })}
-              className="field-control mt-1 block w-[140px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
-            />
-          </label>
-          <label className="text-[12px] font-medium text-slate-500">
-            持有收益
-            <input
-              type="number"
-              step="0.01"
-              value={form.holdingProfit}
+    <div className="border-t border-slate-200/80 bg-[#f8fafc] px-4 py-3">
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="text-[12px] font-medium text-slate-500">
+          持有金额
+          <input
+            type="number"
+            step="0.01"
+            value={form.holdingAmount}
+            onChange={(e) => onChange({ ...form, holdingAmount: e.target.value })}
+            className="field-control mt-1 block w-[140px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
+          />
+        </label>
+        <label className="text-[12px] font-medium text-slate-500">
+          持有收益
+          <input
+            type="number"
+            step="0.01"
+            value={form.holdingProfit}
               onChange={(e) => onChange({ ...form, holdingProfit: e.target.value })}
               className="field-control mt-1 block w-[140px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
             />
           </label>
-          <p className="text-[11px] text-slate-400 self-end pb-1.5">成本 = 持有金额 - 持有收益 · 份额按最新净值估算</p>
+          <p className="text-[11px] text-slate-400 self-end pb-1.5 whitespace-nowrap">成本 = 持有金额 - 持有收益 · 份额按最新净值估算</p>
+          <div className="flex shrink-0 gap-2 self-end">
+            <button type="button" onClick={onCancel} className="ui-button-secondary rounded-lg px-3 py-1.5 text-[12px] font-medium">取消</button>
+            <button type="button" onClick={onSave} className="ui-button-primary rounded-lg px-3 py-1.5 text-[12px] font-medium">保存修改</button>
+          </div>
         </div>
-
-        {/* Right: actions */}
-        <div className="flex shrink-0 gap-2">
-          <button type="button" onClick={onCancel} className="ui-button-secondary rounded-lg px-3.5 py-1.5 text-[12px] font-medium">取消</button>
-          <button type="button" onClick={onSave} className="ui-button-primary rounded-lg px-3.5 py-1.5 text-[12px] font-medium">保存修改</button>
-        </div>
-      </div>
-      {error && <p className="mt-2 text-[12px] text-red-500">{error}</p>}
+      {error && <p className="mt-1.5 text-[12px] text-red-500">{error}</p>}
     </div>
   );
 }
@@ -444,8 +429,6 @@ export default function PortfolioHoldingsTable({
                   <tr>
                     <td colSpan={columns.length} className="p-0">
                       <EditInlineEditor
-                        holding={row.holding}
-                        displayName={row.displayName}
                         form={editForm}
                         error={editError}
                         onChange={setEditForm}
