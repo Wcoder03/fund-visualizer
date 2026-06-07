@@ -50,7 +50,7 @@ export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#f5f7fb]">
+    <div className="flex h-screen overflow-hidden bg-[#f5f7fb]">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
