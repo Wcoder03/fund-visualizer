@@ -88,14 +88,6 @@ export default function FundAdvisor() {
     savePortfolioToStorage(updated);
   };
 
-  const conclusionColor = analysis?.recommendation.conclusion === '值得关注'
-    ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
-    : analysis?.recommendation.conclusion === '谨慎观察'
-      ? 'bg-amber-50 text-amber-700 ring-amber-200'
-      : analysis?.recommendation.conclusion === '暂不建议买入'
-        ? 'bg-red-50 text-red-600 ring-red-200'
-        : 'bg-slate-50 text-slate-600 ring-slate-200';
-
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Search bar */}
@@ -147,7 +139,7 @@ export default function FundAdvisor() {
           <p className="mt-4 text-[15px] font-semibold text-slate-700">输入基金，开始分析</p>
           <p className="mt-1 text-[13px] text-slate-400">支持基金代码、名称、关键词搜索</p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
-            {['基础资料', '收益表现', '风险评估', '优缺点分析', '买入参考'].map(tag => (
+            {['基础资料', '收益表现', '风险评估', '优缺点分析'].map(tag => (
               <span key={tag} className="rounded-full bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-500 ring-1 ring-slate-200/60">{tag}</span>
             ))}
           </div>
@@ -197,8 +189,8 @@ export default function FundAdvisor() {
       {/* Analysis Report */}
       {analysis && (
         <div className="space-y-4">
-          {/* Overview + Score + Recommendation */}
-          <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+          {/* Overview + Performance Bar */}
+          <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
             {/* Overview */}
             <section className="ui-card p-5">
               <div className="flex items-start justify-between gap-4">
@@ -231,7 +223,7 @@ export default function FundAdvisor() {
             {/* Performance Bar */}
             {analysis.performance && (
               <section className="ui-card p-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400 mb-3">Performance</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400 mb-3">收益表现</p>
                 <FundPerformanceBar
                   return1m={analysis.performance.return1m}
                   return3m={analysis.performance.return3m}
@@ -242,34 +234,14 @@ export default function FundAdvisor() {
                 />
               </section>
             )}
-
-            {/* Trend Chart */}
-            {analysis.trendData && analysis.trendData.length > 1 && (
-              <section className="ui-card p-5">
-                <FundTrendChart data={analysis.trendData} fundName={analysis.overview.fundName} />
-              </section>
-            )}
-
-            {/* Score + Recommendation */}
-            <section className="ui-card flex flex-col p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Score</p>
-              <div className="mt-2 flex flex-1 flex-col items-center justify-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
-                  <span className="text-[28px] font-bold text-white tabular-nums">{analysis.score.total}</span>
-                </div>
-                <p className="mt-2 text-[14px] font-semibold text-slate-700">{analysis.score.level}</p>
-              </div>
-              <div className={`mt-3 rounded-lg px-3 py-2 text-center text-[12px] font-semibold ring-1 ${conclusionColor}`}>
-                {analysis.recommendation.conclusion}
-              </div>
-            </section>
           </div>
 
-          {/* Recommendation summary */}
-          <section className="ui-card p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Buy Reference</p>
-            <p className="mt-2 text-[14px] leading-[1.7] text-slate-700">{analysis.recommendation.summary}</p>
-          </section>
+          {/* Trend Chart */}
+          {analysis.trendData && analysis.trendData.length > 1 && (
+            <section className="ui-card p-5">
+              <FundTrendChart data={analysis.trendData} fundName={analysis.overview.fundName} />
+            </section>
+          )}
 
           {/* Pros & Cons */}
           <div className="grid gap-4 lg:grid-cols-2">
@@ -326,23 +298,6 @@ export default function FundAdvisor() {
               </ul>
             </section>
           </div>
-
-          {/* Score dimensions */}
-          <section className="ui-card p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Score Breakdown</p>
-            <h3 className="mt-1 text-[15px] font-semibold text-slate-800">评分维度</h3>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {analysis.score.dimensions.map(d => (
-                <div key={d.name} className="flex items-center gap-3 rounded-lg bg-slate-50 px-3 py-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[13px] font-bold text-slate-700 shadow-sm tabular-nums">{d.score}</div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-medium text-slate-700">{d.name}</p>
-                    <p className="text-[11px] text-slate-400">{d.comment}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
 
           {/* Portfolio relation */}
           <section className="ui-card p-5">
