@@ -1,5 +1,6 @@
 import { runFundAnalysis } from './fundAnalyzer';
 import { getFundSnapshot, searchFunds } from './fundDataProvider';
+import { fetchFundExtendedData } from './providers/eastmoneyProvider';
 import type { FundInput } from '../types/fundAnalysis';
 
 interface ApiRequest {
@@ -44,6 +45,11 @@ export async function handleApiRequest(req: ApiRequest, res: ApiResponse) {
     const snapshotMatch = pathname.match(/^\/api\/funds\/([^/]+)\/snapshot$/);
     if (req.method === 'GET' && snapshotMatch) {
       return sendJson(res, 200, await getFundSnapshot(snapshotMatch[1]));
+    }
+
+    const extendedMatch = pathname.match(/^\/api\/funds\/([^/]+)\/extended$/);
+    if (req.method === 'GET' && extendedMatch) {
+      return sendJson(res, 200, await fetchFundExtendedData(extendedMatch[1]));
     }
 
     const realtimeMatch = pathname.match(/^\/api\/funds\/([^/]+)\/realtime$/);

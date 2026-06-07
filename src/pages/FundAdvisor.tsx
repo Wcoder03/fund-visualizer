@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
-import type { FundSearchResult } from '../types/fund';
+import type { FundExtendedData, FundSearchResult } from '../types/fund';
 import type { PortfolioHolding } from '../types/portfolio';
 import { analyzeFund, type FundAnalysisResult } from '../lib/fundAdvisorService';
-import { fetchFundExtendedData } from '../lib/providers/eastmoneyProvider';
 import FundPerformanceBar from '../components/FundPerformanceBar';
 import FundTrendChart from '../components/FundTrendChart';
 import type { FundNavSnapshot } from '../types/portfolio';
@@ -22,13 +21,17 @@ export default function FundAdvisor() {
     setError(null);
     setCandidates([]);
     try {
-      const [snapshotResp, extendedData] = await Promise.all([
+      const [snapshotResp, extendedResp] = await Promise.all([
         fetch(`/api/funds/${code}/snapshot`),
-        fetchFundExtendedData(code),
+        fetch(`/api/funds/${code}/extended`),
       ]);
       if (!snapshotResp.ok) throw new Error(`获取基金数据失败: ${snapshotResp.status}`);
       const snapshot = (await snapshotResp.json()) as FundNavSnapshot;
       if (name && !snapshot.fundName) snapshot.fundName = name;
+      let extendedData: FundExtendedData | undefined;
+      if (extendedResp.ok) {
+        extendedData = (await extendedResp.json()) as FundExtendedData;
+      }
       const result = analyzeFund(snapshot, holdings, extendedData);
       setAnalysis(result);
     } catch (err) {
