@@ -240,8 +240,8 @@ export default function Dashboard() {
 
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-lg">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300/60">Analysis Workbench</p>
-            <h1 className="mt-1.5 text-[26px] font-bold tracking-tight text-white/95 sm:text-[32px]">基金趋势分析工作台</h1>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300/60">Position Analysis</p>
+            <h1 className="mt-1.5 text-[26px] font-bold tracking-tight text-white/95 sm:text-[32px]">持仓分析</h1>
             <p className="mt-2 text-[13px] leading-[1.7] text-blue-100/50">
               分析范围自动跟随"我的持仓"，结合持仓金额生成组合层面的趋势分析与横向比较。
             </p>
