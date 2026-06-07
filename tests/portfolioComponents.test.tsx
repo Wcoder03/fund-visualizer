@@ -133,7 +133,8 @@ describe('portfolio components', () => {
         onDelete={vi.fn()}
       />
     );
-    expect(screen.getByText('暂无持仓。添加基金代码、持有金额和持有收益后，即可开始分析。')).toBeInTheDocument();
+    expect(screen.getByText('暂无持仓')).toBeInTheDocument();
+    expect(screen.getByText('添加基金代码、持有金额和持有收益后，即可开始分析')).toBeInTheDocument();
   });
 
   it('renders fallback and confirmed status in table', () => {

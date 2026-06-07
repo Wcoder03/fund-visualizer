@@ -32,28 +32,27 @@ export default function HoldingToolbar({
   onSortChange,
 }: HoldingToolbarProps) {
   return (
-    <section className="ui-card p-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+    <section className="ui-card px-4 py-3">
+      <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
-          <button onClick={onAdd} className="ui-button-primary rounded-xl px-4 py-2 text-sm font-semibold">添加持仓</button>
-          <button onClick={onRefresh} disabled={snapshotsLoading} className="ui-button-secondary rounded-xl px-4 py-2 text-sm font-semibold disabled:cursor-wait disabled:opacity-60">
+          <button onClick={onAdd} className="ui-button-primary rounded-lg px-3.5 py-[7px] text-[13px] font-medium">添加持仓</button>
+          <button onClick={onRefresh} disabled={snapshotsLoading} className="ui-button-secondary rounded-lg px-3.5 py-[7px] text-[13px] font-medium disabled:cursor-wait disabled:opacity-60">
             {snapshotsLoading ? '刷新中...' : '刷新净值'}
           </button>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <span className="text-xs text-slate-500">最后更新：{lastUpdatedAt || '--'}</span>
-          <label className="flex items-center gap-2 text-xs font-medium text-slate-500">
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+          <span className="text-[12px] text-slate-400">最后更新 {lastUpdatedAt || '--'}</span>
+          <label className="flex items-center gap-1.5 text-[12px] font-medium text-slate-400">
             排序
-            <select className="field-control rounded-xl px-3 py-2 text-sm font-semibold text-slate-950" value={sortField} onChange={(event) => onSortChange(event.target.value as SortField)}>
+            <select className="field-control rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-slate-700" value={sortField} onChange={(event) => onSortChange(event.target.value as SortField)}>
               {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select>
-            <span>{sortDirection === 'desc' ? '降序' : '升序'}</span>
           </label>
         </div>
       </div>
-      <p className="mt-3 text-xs leading-5 text-slate-500">
-        净值口径：确认净值优先，盘中使用估算净值。非交易日不会触发定投执行，定投计划会顺延到下一个可用交易日。
-        {hasFallback && <span className="ml-2 font-semibold text-orange-600">部分数据为演示来源。</span>}
+      <p className="mt-2 text-[11px] leading-5 text-slate-400">
+        确认净值优先，盘中使用估算净值。非交易日不触发定投，计划顺延至下一交易日。
+        {hasFallback && <span className="ml-1 font-medium text-orange-500">部分数据为演示来源</span>}
       </p>
     </section>
   );

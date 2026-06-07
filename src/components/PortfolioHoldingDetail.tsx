@@ -44,21 +44,21 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
   ];
 
   return (
-    <div className="border-t border-slate-200 bg-slate-50/80 px-5 py-4">
+    <div className="border-t border-slate-100/80 bg-[#f8fafc] px-4 py-3.5">
       <div className="flex flex-wrap items-center gap-2">
         <NavStatusBadge status={snapshot?.marketStatus} />
         <DataStatusBadge snapshot={snapshot} error={error} />
-        {error && <span className="text-xs font-medium text-red-600">{error}</span>}
+        {error && <span className="text-[12px] font-medium text-red-500">{error}</span>}
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
         {items.map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-slate-200 bg-white p-3">
-            <p className="text-xs text-slate-500">{label}</p>
-            <p className="mt-1 break-words text-sm font-semibold text-slate-950">{value}</p>
+          <div key={label} className="rounded-lg border border-slate-200/60 bg-white px-3 py-2">
+            <p className="text-[11px] text-slate-400">{label}</p>
+            <p className="mt-0.5 break-words text-[13px] font-medium text-slate-800 tabular-nums">{value}</p>
           </div>
         ))}
       </div>
-      {holding.note && <p className="mt-3 rounded-xl border border-blue-100 bg-blue-50 p-3 text-sm text-slate-600">{holding.note}</p>}
+      {holding.note && <p className="mt-2.5 rounded-lg border border-blue-100/60 bg-blue-50/50 px-3 py-2 text-[12px] text-slate-500">{holding.note}</p>}
     </div>
   );
 }

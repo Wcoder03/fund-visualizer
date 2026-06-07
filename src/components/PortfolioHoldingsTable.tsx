@@ -106,12 +106,12 @@ function DcaInlineEditor({
     <div className="border-t border-slate-200 bg-blue-50/40 px-5 py-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-950">定投设置</p>
-          <p className="mt-1 text-xs text-slate-500">{holding.fundCode} · {holding.fundName}</p>
+          <p className="text-[14px] font-semibold text-slate-900">定投设置</p>
+          <p className="mt-0.5 text-[12px] text-slate-400">{holding.fundCode} · {holding.fundName}</p>
         </div>
         <div className="flex gap-2">
-          <button type="button" onClick={onCancel} className="ui-button-secondary rounded-xl px-3 py-2 text-xs font-semibold">取消</button>
-          <button type="button" onClick={onSave} className="ui-button-primary rounded-xl px-3 py-2 text-xs font-semibold">保存定投</button>
+          <button type="button" onClick={onCancel} className="ui-button-secondary rounded-lg px-3 py-1.5 text-[12px] font-medium">取消</button>
+          <button type="button" onClick={onSave} className="ui-button-primary rounded-lg px-3 py-1.5 text-[12px] font-medium">保存定投</button>
         </div>
       </div>
       <DcaPlanForm value={value} onChange={onChange} />
@@ -153,14 +153,20 @@ export default function PortfolioHoldingsTable({
 
   if (holdings.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-blue-200 bg-blue-50/70 p-10 text-center text-sm text-slate-500">
-        暂无持仓。添加基金代码、持有金额和持有收益后，即可开始分析。
+      <div className="ui-card p-10 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100">
+          <svg className="h-6 w-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          </svg>
+        </div>
+        <p className="mt-3 text-[14px] font-medium text-slate-500">暂无持仓</p>
+        <p className="mt-1 text-[12px] text-slate-400">添加基金代码、持有金额和持有收益后，即可开始分析</p>
       </div>
     );
   }
 
   return (
-    <div className="ui-card overflow-hidden rounded-2xl">
+    <div className="ui-card overflow-hidden">
       <table className="w-full table-fixed border-collapse text-left">
         <colgroup>
           <col className="w-[23%]" />
@@ -174,13 +180,13 @@ export default function PortfolioHoldingsTable({
           <col className="w-[6%]" />
         </colgroup>
         <thead>
-          <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500">
+          <tr className="border-b border-slate-200/80 bg-[#f8fafc]">
             {columns.map((column) => (
-              <th key={column.label} className={`px-2.5 py-3 ${column.align === 'left' ? 'text-left' : 'text-right'}`}>
+              <th key={column.label} className={`px-3 py-2.5 text-[13px] font-semibold text-slate-500 leading-5 ${column.align === 'left' ? 'text-left' : 'text-right'}`}>
                 {column.field ? (
-                  <button type="button" onClick={() => onSortChange(column.field as SortField)} className="inline-flex items-center gap-1 hover:text-blue-700">
+                  <button type="button" onClick={() => onSortChange(column.field as SortField)} className="inline-flex items-center gap-1 hover:text-blue-600 transition-colors">
                     {column.label}
-                    <span className="text-slate-300">{sortField === column.field ? (sortDirection === 'desc' ? '↓' : '↑') : '↕'}</span>
+                    <span className="text-slate-300 text-[11px]">{sortField === column.field ? (sortDirection === 'desc' ? '↓' : '↑') : '↕'}</span>
                   </button>
                 ) : column.label}
               </th>
@@ -233,50 +239,50 @@ export default function PortfolioHoldingsTable({
 
             return (
               <Fragment key={row.holding.id}>
-                <tr className="border-b border-slate-100 transition-colors hover:bg-blue-50/35">
-                  <td className="px-2.5 py-4 align-top">
-                    <p className="truncate text-sm font-semibold text-slate-950">{row.displayName}</p>
-                    <div className="mt-1 flex flex-wrap gap-2 text-xs text-slate-500">
-                      <span>{row.holding.fundCode}</span>
-                      {row.profit.sharesEstimated && <span className="text-orange-600">份额估算</span>}
+                <tr className="border-b border-slate-100/80 transition-colors hover:bg-[#f8fafc]">
+                  <td className="px-3 py-[14px] align-top">
+                    <p className="truncate text-[15px] font-semibold text-slate-900 leading-[22px]">{row.displayName}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <span className="text-[13px] text-slate-400 font-medium">{row.holding.fundCode}</span>
+                      {row.profit.sharesEstimated && <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-medium text-orange-600 ring-1 ring-orange-200/60">份额估算</span>}
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-slate-400">
-                      <button type="button" onClick={() => setExpandedId(isExpanded ? null : row.holding.id)} className="hover:text-blue-700 hover:underline">详情</button>
-                      <button type="button" onClick={() => onEdit(row.holding)} className="hover:text-blue-700 hover:underline">编辑</button>
-                      <button type="button" onClick={() => onDelete(row.holding.id)} className="hover:text-red-600 hover:underline">删除</button>
+                    <div className="mt-1.5 flex flex-wrap gap-2 text-[13px] text-slate-400">
+                      <button type="button" onClick={() => setExpandedId(isExpanded ? null : row.holding.id)} className="font-medium hover:text-blue-600 transition-colors">详情</button>
+                      <button type="button" onClick={() => onEdit(row.holding)} className="font-medium hover:text-blue-600 transition-colors">编辑</button>
+                      <button type="button" onClick={() => onDelete(row.holding.id)} className="font-medium hover:text-red-500 transition-colors">删除</button>
                     </div>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top">
-                    <p className="font-mono text-sm font-semibold text-slate-950">{formatMoney(row.profit.marketValue)}</p>
-                    <p className="mt-1 text-xs text-slate-500">份额 {formatNumber(row.profit.calculatedHoldingShares, 4)}</p>
+                  <td className="px-3 py-[14px] text-right align-top">
+                    <p className="text-[15px] font-semibold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.marketValue)}</p>
+                    <p className="mt-0.5 text-[12px] text-slate-400">份额 {formatNumber(row.profit.calculatedHoldingShares, 4)}</p>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top">
-                    <p className="font-mono text-sm font-semibold text-slate-950">{formatMoney(row.profit.costAmount)}</p>
-                    <p className="mt-1 text-xs text-slate-500">成本净值 {formatNav(row.profit.inferredCostNav)}</p>
+                  <td className="px-3 py-[14px] text-right align-top">
+                    <p className="text-[15px] font-semibold text-slate-900 leading-6 tabular-nums">{formatMoney(row.profit.costAmount)}</p>
+                    <p className="mt-0.5 text-[12px] text-slate-400">成本净值 {formatNav(row.profit.inferredCostNav)}</p>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top">
-                    <p className="font-mono text-sm font-semibold text-slate-950">{formatNav(row.displayNav)}</p>
-                    <p className="mt-1 text-xs text-slate-500">{row.navDate || '--'} · {navStatusLabel(row.snapshot?.marketStatus)}</p>
+                  <td className="px-3 py-[14px] text-right align-top">
+                    <p className="text-[15px] font-semibold text-slate-900 leading-6 tabular-nums">{formatNav(row.displayNav)}</p>
+                    <p className="mt-0.5 text-[12px] text-slate-400">{row.navDate || '--'}</p>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top">
-                    <p className="font-mono text-sm font-semibold"><ProfitLossValue value={dailyValue} type="money" /></p>
-                    <p className="mt-1 text-xs"><ProfitLossValue value={dailyRate} type="rate" /></p>
+                  <td className="px-3 py-[14px] text-right align-top">
+                    <p className="text-[15px] font-semibold leading-6 tabular-nums"><ProfitLossValue value={dailyValue} type="money" /></p>
+                    <p className="mt-0.5 text-[12px]"><ProfitLossValue value={dailyRate} type="rate" /></p>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top">
-                    <p className="font-mono text-sm font-semibold"><ProfitLossValue value={row.profit.totalProfitLoss} type="money" /></p>
-                    <p className="mt-1 text-xs"><ProfitLossValue value={row.profit.totalProfitLossRate} type="rate" /></p>
+                  <td className="px-3 py-[14px] text-right align-top">
+                    <p className="text-[15px] font-semibold leading-6 tabular-nums"><ProfitLossValue value={row.profit.totalProfitLoss} type="money" /></p>
+                    <p className="mt-0.5 text-[12px]"><ProfitLossValue value={row.profit.totalProfitLossRate} type="rate" /></p>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top font-mono text-sm text-slate-600">{row.profit.holdingDays}</td>
-                  <td className="px-2.5 py-4 text-right align-top">
+                  <td className="px-3 py-[14px] text-right align-top text-[14px] font-medium text-slate-600 tabular-nums">{row.profit.holdingDays}</td>
+                  <td className="px-3 py-[14px] text-right align-top">
                     <div className="flex flex-col items-end gap-1">
                       <NavStatusBadge status={row.snapshot?.marketStatus} />
                       <DataStatusBadge snapshot={row.snapshot} error={row.error} />
-                      {row.error && <button type="button" onClick={() => onRetry?.(row.holding.fundCode)} className="text-xs text-blue-700 underline-offset-2 hover:underline">重试</button>}
+                      {row.error && <button type="button" onClick={() => onRetry?.(row.holding.fundCode)} className="text-[12px] text-blue-600 font-medium hover:text-blue-700 transition-colors">重试</button>}
                     </div>
                   </td>
-                  <td className="px-2.5 py-4 text-right align-top text-xs text-slate-600">
-                    <p>{dcaSummary(row.holding)}</p>
-                    <button type="button" onClick={openDcaEditor} className="mt-1 text-[11px] text-slate-400 hover:text-blue-700 hover:underline">
+                  <td className="px-3 py-[14px] text-right align-top">
+                    <p className="text-[13px] text-slate-500">{dcaSummary(row.holding)}</p>
+                    <button type="button" onClick={openDcaEditor} className="mt-1 text-[12px] font-medium text-slate-400 hover:text-blue-600 transition-colors">
                       {row.holding.dcaPlan?.enabled ? '编辑' : '设置'}
                     </button>
                   </td>
