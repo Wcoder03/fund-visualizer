@@ -233,24 +233,24 @@ export default function Dashboard() {
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a8f] via-[#2546a8] to-[#3b5ccc] p-6 text-white shadow-lg shadow-blue-600/15 lg:p-8">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10 blur-2xl" />
-        <div className="pointer-events-none absolute right-8 top-6 hidden h-28 w-28 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm lg:block" />
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b1f4d] via-[#122d6b] to-[#1a3f8a] p-6 text-white shadow-lg shadow-blue-900/20 lg:px-8 lg:py-7">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{backgroundImage:'repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 40px)'}} />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px]" />
+        <div className="pointer-events-none absolute -bottom-16 left-1/3 h-48 w-48 rounded-full bg-indigo-400/8 blur-[60px]" />
 
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-200/80">Analysis Workbench</p>
-            <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">基金趋势分析工作台</h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100/80">
+          <div className="max-w-lg">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300/60">Analysis Workbench</p>
+            <h1 className="mt-1.5 text-[26px] font-bold tracking-tight text-white/95 sm:text-[32px]">基金趋势分析工作台</h1>
+            <p className="mt-2 text-[13px] leading-[1.7] text-blue-100/50">
               分析范围自动跟随"我的持仓"，结合持仓金额生成组合层面的趋势分析与横向比较。
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2.5">
             {headlineStats.map((stat) => (
-              <div key={stat.label} className="rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
-                <p className="text-[10px] font-medium text-blue-200/70">{stat.label}</p>
-                <p className="mt-0.5 text-lg font-bold text-white">{stat.value}</p>
+              <div key={stat.label} className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
+                <p className="text-[10px] font-medium text-blue-200/40">{stat.label}</p>
+                <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">{stat.value}</p>
               </div>
             ))}
           </div>

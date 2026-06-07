@@ -65,29 +65,46 @@ export default function Comparison() {
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a8f] via-[#2546a8] to-[#3b5ccc] p-6 text-white shadow-lg shadow-blue-600/15 lg:p-8">
-        {/* Decorative elements */}
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10 blur-2xl" />
-        <div className="pointer-events-none absolute right-8 top-6 hidden h-28 w-28 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm lg:block" />
-        <div className="pointer-events-none absolute right-20 top-12 hidden h-16 w-16 rounded-xl border border-white/5 bg-white/5 lg:block" />
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b1f4d] via-[#122d6b] to-[#1a3f8a] p-6 text-white shadow-lg shadow-blue-900/20 lg:px-8 lg:py-7">
+        {/* Decorative: grid pattern */}
+        <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{backgroundImage:'repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,#fff 0 1px,transparent 1px 40px)'}} />
+        {/* Decorative: blurred orbs */}
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-blue-500/10 blur-[80px]" />
+        <div className="pointer-events-none absolute -bottom-16 left-1/3 h-48 w-48 rounded-full bg-indigo-400/8 blur-[60px]" />
 
-        <div className="relative">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-blue-200/80">Portfolio & DCA</p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">我的持仓</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-blue-100/80">
-            基于持仓金额、持有收益和基金净值数据计算当前市值、当日收益与定投摘要。盘中估值仅用于测算，以确认净值为准。
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              {snapshotsLoading ? '净值刷新中' : hasFallback ? '部分演示数据' : holdings.length > 0 ? '数据已同步' : '等待添加持仓'}
-            </span>
-            {lastUpdatedAt && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-                更新于 {lastUpdatedAt}
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          {/* Left: text */}
+          <div className="max-w-lg">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300/60">Portfolio & DCA</p>
+            <h1 className="mt-1.5 text-[26px] font-bold tracking-tight text-white/95 sm:text-[32px]">我的持仓</h1>
+            <p className="mt-2 text-[13px] leading-[1.7] text-blue-100/50">
+              基于持仓金额、持有收益和基金净值数据计算当前市值、当日收益与定投摘要。
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-2.5 py-1 text-[11px] font-medium text-white/70 ring-1 ring-white/10 backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/40" />
+                {snapshotsLoading ? '净值刷新中' : hasFallback ? '部分演示数据' : holdings.length > 0 ? '数据已同步' : '等待添加持仓'}
               </span>
-            )}
+              {lastUpdatedAt && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/40">
+                  {lastUpdatedAt}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Right: glass stat cards */}
+          <div className="flex gap-2.5">
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
+              <p className="text-[10px] font-medium text-blue-200/40">基金数量</p>
+              <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">{holdings.length}</p>
+            </div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 backdrop-blur-md">
+              <p className="text-[10px] font-medium text-blue-200/40">定投计划</p>
+              <p className="mt-0.5 text-[22px] font-bold tracking-tight text-white/90 tabular-nums">
+                {holdings.filter(h => h.dcaPlan?.enabled && h.dcaPlan.status !== 'paused').length}
+              </p>
+            </div>
           </div>
         </div>
       </section>
