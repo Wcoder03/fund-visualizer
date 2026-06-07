@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
-import HoldingForm from './HoldingForm';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import HoldingSummary from './HoldingSummary';
 import PortfolioHoldingsTable, { type SortDirection, type SortField } from './PortfolioHoldingsTable';
 import type { FundNavSnapshot, PortfolioHolding } from '../types/portfolio';
@@ -43,6 +42,10 @@ function loadSort(): { field: SortField; direction: SortDirection } {
   }
 }
 
+function normalizeFundCode(value: string): string {
+  return value.trim().replace(/\s+/g, '').toUpperCase();
+}
+
 export default function PortfolioHoldingsPageSection({
   holdings,
   fundPool,
@@ -57,7 +60,11 @@ export default function PortfolioHoldingsPageSection({
   const initialSort = useMemo(() => loadSort(), []);
   const [sortField, setSortField] = useState<SortField>(initialSort.field);
   const [sortDirection, setSortDirection] = useState<SortDirection>(initialSort.direction);
-  const [formVisible, setFormVisible] = useState(false);
+  const [addingVisible, setAddingVisible] = useState(false);
+  const [addCode, setAddCode] = useState('');
+  const [addAmount, setAddAmount] = useState('');
+  const [addProfit, setAddProfit] = useState('');
+  const [addError, setAddError] = useState('');
 
   useEffect(() => {
     window.localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify({ field: sortField, direction: sortDirection }));
@@ -72,29 +79,47 @@ export default function PortfolioHoldingsPageSection({
     setSortDirection('desc');
   };
 
-  const saveHolding = (holding: PortfolioHolding) => {
-    onSave(holding);
-    setFormVisible(false);
-  };
+  const resetAddForm = useCallback(() => {
+    setAddCode('');
+    setAddAmount('');
+    setAddProfit('');
+    setAddError('');
+  }, []);
+
+  const handleSaveNew = useCallback(() => {
+    const code = normalizeFundCode(addCode);
+    const amount = Number(addAmount);
+    const profit = Number(addProfit);
+    if (!code) { setAddError('请输入基金代码'); return; }
+    if (!Number.isFinite(amount) || amount <= 0) { setAddError('请输入有效的持有金额'); return; }
+    if (addProfit !== '' && !Number.isFinite(profit)) { setAddError('请输入有效的持有收益'); return; }
+    const cost = Math.max(0, Number((amount - profit).toFixed(2)));
+    const known = fundPool.find((f) => f.code === code);
+    onSave({
+      id: `holding-${code}-${Date.now()}`,
+      fundCode: code,
+      fundName: known?.name || `基金 ${code}`,
+      holdingAmount: Number(amount.toFixed(2)),
+      costAmount: cost,
+      firstBuyDate: new Date().toISOString().slice(0, 10),
+      holdingDays: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    resetAddForm();
+    setAddingVisible(false);
+  }, [addCode, addAmount, addProfit, fundPool, onSave, resetAddForm]);
 
   return (
     <section className="space-y-5">
       <HoldingSummary holdings={holdings} snapshotsByFundCode={snapshotsByFundCode} lastUpdatedAt={lastUpdatedAt} />
 
-      {formVisible && (
-        <HoldingForm
-          fundPool={fundPool}
-          onSave={saveHolding}
-          onCancelEdit={() => setFormVisible(false)}
-        />
-      )}
-
-      {/* Holdings table card with integrated toolbar */}
+      {/* Holdings table card with toolbar + inline add form + table */}
       <div className="ui-card overflow-hidden">
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3">
           <div className="flex flex-wrap items-center gap-2">
-            <button onClick={() => setFormVisible((v) => !v)} className="ui-button-primary rounded-lg px-3.5 py-[7px] text-[13px] font-medium">添加持仓</button>
+            <button onClick={() => { setAddingVisible((v) => !v); resetAddForm(); }} className="ui-button-primary rounded-lg px-3.5 py-[7px] text-[13px] font-medium">添加持仓</button>
             <button onClick={() => onRefresh()} disabled={snapshotsLoading} className="ui-button-secondary rounded-lg px-3.5 py-[7px] text-[13px] font-medium disabled:cursor-wait disabled:opacity-60">
               {snapshotsLoading ? '刷新中...' : '刷新净值'}
             </button>
@@ -110,6 +135,50 @@ export default function PortfolioHoldingsPageSection({
             </label>
           </div>
         </div>
+
+        {/* Inline add form */}
+        {addingVisible && (
+          <div className="flex flex-wrap items-end gap-3 border-b border-slate-100 bg-[#f8fafc] px-5 py-3">
+            <label className="text-[12px] font-medium text-slate-500">
+              基金代码
+              <input
+                type="text"
+                inputMode="numeric"
+                value={addCode}
+                onChange={(e) => setAddCode(e.target.value)}
+                placeholder="例如 018173"
+                className="field-control mt-1 block w-[140px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
+              />
+            </label>
+            <label className="text-[12px] font-medium text-slate-500">
+              持有金额
+              <input
+                type="number"
+                step="0.01"
+                value={addAmount}
+                onChange={(e) => setAddAmount(e.target.value)}
+                placeholder="金额"
+                className="field-control mt-1 block w-[130px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
+              />
+            </label>
+            <label className="text-[12px] font-medium text-slate-500">
+              持有收益
+              <input
+                type="number"
+                step="0.01"
+                value={addProfit}
+                onChange={(e) => setAddProfit(e.target.value)}
+                placeholder="收益"
+                className="field-control mt-1 block w-[130px] rounded-lg px-3 py-1.5 text-[13px] text-slate-800"
+              />
+            </label>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => { setAddingVisible(false); resetAddForm(); }} className="ui-button-secondary rounded-lg px-3 py-1.5 text-[12px] font-medium">取消</button>
+              <button type="button" onClick={handleSaveNew} className="ui-button-primary rounded-lg px-3 py-1.5 text-[12px] font-medium">保存持仓</button>
+            </div>
+            {addError && <p className="w-full text-[12px] text-red-500">{addError}</p>}
+          </div>
+        )}
 
         {/* Table */}
         <PortfolioHoldingsTable

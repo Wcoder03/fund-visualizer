@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import HoldingForm from '../src/components/HoldingForm';
 import HoldingSummary from '../src/components/HoldingSummary';
 import PortfolioHoldingsTable from '../src/components/PortfolioHoldingsTable';
 import ProfitLossValue from '../src/components/ProfitLossValue';
@@ -79,46 +78,6 @@ describe('portfolio components', () => {
     expect(screen.getByText('--')).toBeInTheDocument();
   });
 
-  it('validates holding form fields', () => {
-    const onSave = vi.fn();
-    render(<HoldingForm fundPool={[{ code: '001', name: '测试基金A' }]} onSave={onSave} />);
-    fireEvent.click(screen.getByText('添加持仓'));
-    expect(screen.getByText('请输入基金代码')).toBeInTheDocument();
-    expect(screen.getByText('请输入持有金额')).toBeInTheDocument();
-    expect(onSave).not.toHaveBeenCalled();
-  });
-
-  it('creates a holding from amount and profit only', () => {
-    const onSave = vi.fn();
-    render(<HoldingForm fundPool={[{ code: '001', name: '测试基金A' }]} onSave={onSave} />);
-    fireEvent.change(screen.getByLabelText('基金代码'), { target: { value: '001' } });
-    fireEvent.change(screen.getByLabelText('持有金额'), { target: { value: '1137.51' } });
-    fireEvent.change(screen.getByLabelText('持有收益'), { target: { value: '28.07' } });
-    fireEvent.click(screen.getByText('添加持仓'));
-    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
-      fundCode: '001',
-      holdingAmount: 1137.51,
-      holdingShares: undefined,
-      costAmount: 1109.44,
-      note: '录入持有收益：28.07 元',
-    }));
-  });
-
-  it('allows adding a fund code outside the known fund pool', () => {
-    const onSave = vi.fn();
-    render(<HoldingForm fundPool={[]} onSave={onSave} />);
-    fireEvent.change(screen.getByLabelText('基金代码'), { target: { value: '  999999 ' } });
-    fireEvent.change(screen.getByLabelText('持有金额'), { target: { value: '1000' } });
-    fireEvent.change(screen.getByLabelText('持有收益'), { target: { value: '-20' } });
-    fireEvent.click(screen.getByText('添加持仓'));
-    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({
-      fundCode: '999999',
-      fundName: '基金 999999',
-      holdingAmount: 1000,
-      costAmount: 1020,
-    }));
-  });
-
   it('renders empty holdings table', () => {
     render(
       <PortfolioHoldingsTable
@@ -128,7 +87,6 @@ describe('portfolio components', () => {
         sortField="marketValue"
         sortDirection="desc"
         onSortChange={vi.fn()}
-        onEdit={vi.fn()}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
       />
@@ -146,7 +104,6 @@ describe('portfolio components', () => {
         sortField="marketValue"
         sortDirection="desc"
         onSortChange={vi.fn()}
-        onEdit={vi.fn()}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
       />
@@ -166,7 +123,6 @@ describe('portfolio components', () => {
         sortField="marketValue"
         sortDirection="desc"
         onSortChange={onSortChange}
-        onEdit={vi.fn()}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
       />
@@ -184,7 +140,6 @@ describe('portfolio components', () => {
         sortField="marketValue"
         sortDirection="desc"
         onSortChange={vi.fn()}
-        onEdit={vi.fn()}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
       />
