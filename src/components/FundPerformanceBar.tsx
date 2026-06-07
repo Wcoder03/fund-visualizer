@@ -42,15 +42,15 @@ export default function FundPerformanceBar({ return1m, return3m, return6m, retur
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 lg:grid-cols-3">
       {metrics.map((m) => {
         const isNav = m.label === '当前净值';
         const displayValue = isNav ? formatNav(m.value) : formatPercent(m.value);
         const colorClass = isNav ? 'text-slate-900' : getChangeColor(m.value);
         return (
-          <div key={m.label} className="rounded-lg bg-slate-50 px-3 py-2 text-center">
-            <p className="text-[11px] text-slate-400">{m.label}</p>
-            <p className={`mt-0.5 text-[15px] font-bold tabular-nums ${colorClass}`}>{displayValue}</p>
+          <div key={m.label} className="rounded-lg bg-slate-50 px-3 py-2">
+            <p className="whitespace-nowrap text-[11px] text-slate-400">{m.label}</p>
+            <p className={`mt-0.5 whitespace-nowrap text-[15px] font-bold tabular-nums ${colorClass}`}>{displayValue}</p>
           </div>
         );
       })}

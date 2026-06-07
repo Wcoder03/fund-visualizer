@@ -190,7 +190,7 @@ export default function FundAdvisor() {
       {analysis && (
         <div className="space-y-4">
           {/* Overview + Performance Bar */}
-          <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(400px,1fr)]">
             {/* Overview */}
             <section className="ui-card p-5">
               <div className="flex items-start justify-between gap-4">
