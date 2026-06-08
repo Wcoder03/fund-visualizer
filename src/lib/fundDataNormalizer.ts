@@ -82,7 +82,7 @@ export function buildSnapshot(input: {
     dataStatus: input.dataStatus,
     updatedAt: new Date().toISOString(),
     message: input.message,
-    navHistory: input.history?.map((item) => ({
+    navHistory: validHistory.map((item) => ({
       date: item.date,
       unitNav: item.unitNav,
     })),

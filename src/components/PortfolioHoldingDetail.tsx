@@ -33,11 +33,21 @@ function navWithDate(nav: number | undefined, date?: string): string {
   return date ? `${formatted} (${date})` : formatted;
 }
 
+function isSameNav(a?: number, b?: number): boolean {
+  if (a == null || b == null) return false;
+  return Math.abs(a - b) < 0.0001;
+}
+
 export default function PortfolioHoldingDetail({ holding, snapshot, error }: PortfolioHoldingDetailProps) {
   const profit = calculatePortfolioProfitLoss(holding, snapshot);
   const firstBuyDate = profit.inferredFirstBuyDate || holding.firstBuyDate || '--';
-  const items = [
-    ['前一交易日净值', navWithDate(snapshot?.previousNav, snapshot?.previousNavDate)],
+  const showPrevious = !isSameNav(snapshot?.previousNav, snapshot?.latestConfirmedNav);
+
+  const items: [string, string][] = [];
+  if (showPrevious) {
+    items.push(['前一确认净值', navWithDate(snapshot?.previousNav, snapshot?.previousNavDate)]);
+  }
+  items.push(
     ['最新确认净值', navWithDate(snapshot?.latestConfirmedNav, snapshot?.latestConfirmedNavDate)],
     ['当日确认净值', navWithDate(snapshot?.confirmedNav, snapshot?.confirmedNavDate)],
     ['估算净值', navWithDate(snapshot?.estimatedNav, snapshot?.estimatedNavDate)],
@@ -46,8 +56,8 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
     ['成本净值', formatNav(profit.inferredCostNav)],
     ['定投计划', dcaText(holding)],
     ['数据来源', snapshotSourceText(snapshot)],
-    ['数据更新时间', snapshot?.updatedAt || '--'],
-  ];
+    ['数据更新时间', snapshot?.updatedAt || '--']
+  );
 
   return (
     <div className="border-t border-slate-100/80 bg-[#f8fafc] px-4 py-3.5">
