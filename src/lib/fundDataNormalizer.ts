@@ -113,7 +113,7 @@ export function buildSnapshot(input: {
     estimatedNavDate: input.realtime?.estimateTime || '',
     estimateTime: input.realtime?.estimateTime,
     dailyChangeRate: input.latest?.dailyChangeRate,
-    intradayChangeRate: isValidNumber(estimatedChangeRate) ? estimatedChangeRate : 0,
+    intradayChangeRate: isValidNumber(estimatedChangeRate) ? estimatedChangeRate : undefined,
     confirmedChangeRate: input.latest?.dailyChangeRate,
     marketStatus: input.marketStatus,
     dataSource: input.dataSource,

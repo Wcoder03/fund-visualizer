@@ -30,6 +30,7 @@ export function calculateTotalProfitLossRate(totalProfitLoss: number | null, cos
 
 export function calculateDailyProfitLoss(holdingShares: number, currentNav?: number, previousNav?: number): number | null {
   if (!currentNav || !previousNav || currentNav <= 0 || previousNav <= 0) return null;
+  if (currentNav === previousNav) return null; // 净值相同说明无新数据，不视为0收益
   const rate = Math.abs((currentNav - previousNav) / previousNav);
   if (rate > 0.2) return null; // 日涨跌幅超过20%视为数据异常
   return round2(holdingShares * (currentNav - previousNav));
@@ -37,8 +38,9 @@ export function calculateDailyProfitLoss(holdingShares: number, currentNav?: num
 
 export function calculateDailyProfitLossRate(currentNav?: number, previousNav?: number): number | null {
   if (!currentNav || !previousNav || previousNav <= 0) return null;
+  if (currentNav === previousNav) return null;
   const rate = (currentNav - previousNav) / previousNav;
-  if (Math.abs(rate) > 0.2) return null; // 日涨跌幅超过20%视为数据异常
+  if (Math.abs(rate) > 0.2) return null;
   return round4(rate);
 }
 

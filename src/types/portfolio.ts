@@ -71,7 +71,7 @@ export interface FundNavSnapshot {
   estimatedNavDate: string;
   estimateTime?: string;
   dailyChangeRate?: number;
-  intradayChangeRate: number;
+  intradayChangeRate?: number;
   confirmedChangeRate?: number;
   marketStatus: MarketStatus;
   dataSource?: PortfolioDataSource;
