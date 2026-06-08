@@ -1,16 +1,22 @@
 import type { FundNavHistoryItem, FundRealtimeEstimate } from '../types/fund';
 import type { FundMarketType, FundNavSnapshot, MarketStatus } from '../types/portfolio';
 
-const OVERSEAS_KEYWORDS = [
-  'QDII', '纳斯达克', '标普', '美股', '美国', '全球', '海外',
-  '中概', '恒生', '港股', '越南', '印度', '日本', '德国', '欧洲',
-  'REIT', '石油', '黄金', '原油', '大宗商品',
-];
+const US_KEYWORDS = ['QDII', '纳斯达克', '标普', '美股', '美国', '中概', '全球精选', '全球成长', '致远'];
+const HK_KEYWORDS = ['港股', '恒生', '恒生科技'];
+const GLOBAL_KEYWORDS = ['全球', '海外'];
+const OTHER_KEYWORDS = ['越南', '印度', '日本', '德国', '欧洲', 'REIT', '石油', '黄金', '原油', '大宗商品'];
 
 export function detectMarketType(fundName: string): FundMarketType {
   const upper = fundName.toUpperCase();
-  if (OVERSEAS_KEYWORDS.some((kw) => upper.includes(kw.toUpperCase()))) return 'overseas';
+  if (US_KEYWORDS.some((kw) => upper.includes(kw.toUpperCase()))) return 'qdii_us';
+  if (HK_KEYWORDS.some((kw) => upper.includes(kw.toUpperCase()))) return 'qdii_hk';
+  if (OTHER_KEYWORDS.some((kw) => upper.includes(kw.toUpperCase()))) return 'overseas_other';
+  if (GLOBAL_KEYWORDS.some((kw) => upper.includes(kw.toUpperCase()))) return 'qdii_global';
   return 'domestic';
+}
+
+export function isOverseasFund(marketType?: FundMarketType): boolean {
+  return marketType != null && marketType !== 'domestic' && marketType !== 'unknown';
 }
 
 function isValidNumber(v: unknown): v is number {

@@ -1,5 +1,75 @@
 import type { FundMarketType, MarketStatus } from '../types/portfolio';
 
+export interface OverseasEstimateLabel {
+  shortLabel: string;
+  fullLabel: string;
+  overseasTradeDate: string | null;
+  beijingTime: string | null;
+}
+
+function parseEstimateTime(est: string): { date: string; hour: number } | null {
+  const m = est.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}):(\d{2})/);
+  if (!m) return null;
+  return { date: m[1], hour: parseInt(m[2], 10) };
+}
+
+function prevDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function marketLabel(mt: FundMarketType): string {
+  if (mt === 'qdii_us') return '美股';
+  if (mt === 'qdii_hk') return '港股';
+  return '海外';
+}
+
+export function formatOverseasEstimateLabel(
+  marketType: FundMarketType,
+  estimatedTime: string | null | undefined
+): OverseasEstimateLabel {
+  const label = marketLabel(marketType);
+
+  if (!estimatedTime) {
+    return { shortLabel: `估算 ${label}`, fullLabel: `估算 ${label}`, overseasTradeDate: null, beijingTime: null };
+  }
+
+  const parsed = parseEstimateTime(estimatedTime);
+  if (!parsed) {
+    return { shortLabel: `估算 ${label}`, fullLabel: `估算 ${label}`, overseasTradeDate: null, beijingTime: estimatedTime };
+  }
+
+  let overseasDate: string;
+
+  if (marketType === 'qdii_us') {
+    // 美股：北京时间凌晨 03:00-08:00 通常对应美股前一交易日收盘
+    if (parsed.hour >= 2 && parsed.hour <= 8) {
+      overseasDate = prevDate(parsed.date);
+    } else {
+      overseasDate = parsed.date;
+    }
+  } else if (marketType === 'qdii_hk') {
+    // 港股：同东八区，直接用北京时间日期
+    overseasDate = parsed.date;
+  } else {
+    // 全球/其他：凌晨时段按前一交易日
+    if (parsed.hour >= 2 && parsed.hour <= 8) {
+      overseasDate = prevDate(parsed.date);
+    } else {
+      overseasDate = parsed.date;
+    }
+  }
+
+  const mm = overseasDate.slice(5); // MM-DD
+  return {
+    shortLabel: `估算 ${label}${mm}收盘`,
+    fullLabel: `对应${label}交易日 ${overseasDate}，北京时间 ${estimatedTime}`,
+    overseasTradeDate: overseasDate,
+    beijingTime: estimatedTime,
+  };
+}
+
 export function navStatusLabel(status?: MarketStatus, marketType?: FundMarketType): string {
   if (!status) return '净值缺失';
   if (marketType === 'overseas') {

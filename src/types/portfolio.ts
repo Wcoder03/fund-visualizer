@@ -52,7 +52,7 @@ export interface PortfolioHoldingInput {
   dcaPlan?: DcaPlan;
 }
 
-export type FundMarketType = 'domestic' | 'overseas' | 'unknown';
+export type FundMarketType = 'domestic' | 'qdii_us' | 'qdii_hk' | 'qdii_global' | 'overseas_other' | 'unknown';
 
 export interface FundNavSnapshot {
   fundCode: string;

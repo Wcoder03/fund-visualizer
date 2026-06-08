@@ -7,6 +7,7 @@ import ProfitLossValue from './ProfitLossValue';
 import { calculateNextDcaDate, calculatePortfolioProfitLoss } from '../lib/portfolioCalculator';
 import { getDisplayNav } from '../lib/marketStatus';
 import { formatMoney, formatNav, formatNumber } from '../lib/portfolioFormatters';
+import { formatOverseasEstimateLabel } from '../lib/navStatusText';
 import type { DcaFrequency, FundNavSnapshot, PortfolioHolding, PortfolioProfitLoss } from '../types/portfolio';
 
 export type SortField =
@@ -194,12 +195,28 @@ export default function PortfolioHoldingsTable({
     return holdings.map((holding) => {
       const snapshot = snapshotsByFundCode[holding.fundCode];
       const profit = calculatePortfolioProfitLoss(holding, snapshot);
+      const isOverseas = snapshot?.marketType && snapshot.marketType !== 'domestic' && snapshot.marketType !== 'unknown';
       const isTrading = snapshot?.marketStatus === 'trading' || snapshot?.marketStatus === 'closed_pending_nav';
       const isConfirmed = snapshot?.marketStatus === 'nav_confirmed';
-      const navSource = isTrading ? '估算' : isConfirmed ? '确认' : '';
-      const navDateRaw = isTrading
-        ? (snapshot?.estimateTime || snapshot?.estimatedNavDate || snapshot?.navDate)
-        : (snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate);
+
+      let navSource: string;
+      let navDateRaw: string | undefined;
+
+      if (isOverseas && isTrading) {
+        const estTime = snapshot?.estimateTime || snapshot?.estimatedNavDate;
+        const label = formatOverseasEstimateLabel(snapshot!.marketType!, estTime);
+        navSource = label.shortLabel;
+        navDateRaw = undefined; // date is embedded in shortLabel
+      } else if (isTrading) {
+        navSource = '估算';
+        navDateRaw = snapshot?.estimateTime || snapshot?.estimatedNavDate || snapshot?.navDate;
+      } else if (isConfirmed) {
+        navSource = '确认';
+        navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
+      } else {
+        navSource = '';
+        navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
+      }
 
       return {
         holding,
