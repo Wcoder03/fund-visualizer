@@ -14,9 +14,12 @@ function parseEstimateTime(est: string): { date: string; hour: number } | null {
 }
 
 function prevDate(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d - 1);
+  const yy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
 }
 
 function marketLabel(mt: FundMarketType): string {
