@@ -51,7 +51,7 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
     ['最新确认净值', navWithDate(snapshot?.latestConfirmedNav, snapshot?.latestConfirmedNavDate)],
     ['当日确认净值', navWithDate(snapshot?.confirmedNav, snapshot?.confirmedNavDate)],
     ['估算净值', navWithDate(snapshot?.estimatedNav, snapshot?.estimatedNavDate)],
-    ['净值口径说明', navStatusNote(snapshot?.marketStatus)],
+    ['净值口径说明', navStatusNote(snapshot?.marketStatus, snapshot?.marketType)],
     ['首次买入日期', `${firstBuyDate}${profit.inferredFirstBuyDate ? ' · 推算' : ''}`],
     ['成本净值', formatNav(profit.inferredCostNav)],
     ['定投计划', dcaText(holding)],
@@ -62,7 +62,7 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
   return (
     <div className="border-t border-slate-100/80 bg-[#f8fafc] px-4 py-3.5">
       <div className="flex flex-wrap items-center gap-2">
-        <NavStatusBadge status={snapshot?.marketStatus} />
+        <NavStatusBadge status={snapshot?.marketStatus} marketType={snapshot?.marketType} />
         <DataStatusBadge snapshot={snapshot} error={error} />
         {error && <span className="text-[12px] font-medium text-red-500">{error}</span>}
       </div>

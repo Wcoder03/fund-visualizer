@@ -60,11 +60,25 @@ export function getMarketStatus(now: Date, tradingCalendar: TradingCalendarDay[]
 export function getDisplayNav(snapshot?: FundNavSnapshot): number | undefined {
   if (!snapshot) return undefined;
   if (snapshot.displayNav) return snapshot.displayNav;
+
+  const isOverseas = snapshot.marketType === 'overseas';
+
+  if (isOverseas) {
+    // QDII/海外基金：不依赖 A 股交易时段，有估算就用估算，否则用最新确认
+    if (isValidNumber(snapshot.estimatedNav)) return snapshot.estimatedNav;
+    return snapshot.latestConfirmedNav ?? snapshot.currentNav;
+  }
+
+  // A 股基金：按 A 股交易时段判断
   if (snapshot.marketStatus === 'nav_confirmed') return snapshot.confirmedNav ?? snapshot.currentNav;
   if (snapshot.marketStatus === 'trading' || snapshot.marketStatus === 'closed_pending_nav') {
     return snapshot.estimatedNav ?? snapshot.latestConfirmedNav ?? snapshot.currentNav;
   }
   return snapshot.latestConfirmedNav ?? snapshot.currentNav ?? snapshot.confirmedNav ?? snapshot.previousNav;
+}
+
+function isValidNumber(v: unknown): v is number {
+  return v != null && Number.isFinite(v) && (v as number) > 0;
 }
 
 export function getDailyProfitLossLabel(status: MarketStatus): string {

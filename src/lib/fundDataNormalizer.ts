@@ -1,5 +1,21 @@
 import type { FundNavHistoryItem, FundRealtimeEstimate } from '../types/fund';
-import type { FundNavSnapshot, MarketStatus } from '../types/portfolio';
+import type { FundMarketType, FundNavSnapshot, MarketStatus } from '../types/portfolio';
+
+const OVERSEAS_KEYWORDS = [
+  'QDII', '纳斯达克', '标普', '美股', '美国', '全球', '海外',
+  '中概', '恒生', '港股', '越南', '印度', '日本', '德国', '欧洲',
+  'REIT', '石油', '黄金', '原油', '大宗商品',
+];
+
+export function detectMarketType(fundName: string): FundMarketType {
+  const upper = fundName.toUpperCase();
+  if (OVERSEAS_KEYWORDS.some((kw) => upper.includes(kw.toUpperCase()))) return 'overseas';
+  return 'domestic';
+}
+
+function isValidNumber(v: unknown): v is number {
+  return v != null && Number.isFinite(v) && v > 0;
+}
 
 export function normalizeNumber(value: unknown): number | undefined {
   if (value === null || value === undefined || value === '') return undefined;
@@ -23,12 +39,14 @@ export function buildSnapshot(input: {
   dataStatus: FundNavSnapshot['dataStatus'];
   message?: string;
 }): FundNavSnapshot {
+  const marketType = detectMarketType(input.fundName);
+
   // 从历史净值中提取有效记录
   let validHistory = (input.history ?? []).filter(
     (item) => item.date && item.unitNav != null && Number.isFinite(item.unitNav) && item.unitNav > 0
   );
 
-  // 如果实时 API 有更新的确认净值，追加到历史中（修复历史数据滞后问题）
+  // 如果实时 API 有更新的确认净值，追加到历史中
   const rtNav = input.realtime?.latestConfirmedNav;
   const rtDate = input.realtime?.navDate;
   if (rtNav && rtDate && rtNav > 0) {
@@ -40,7 +58,6 @@ export function buildSnapshot(input: {
 
   const latestFromHistory = validHistory.length > 0 ? validHistory[validHistory.length - 1] : undefined;
 
-  // 最新确认净值和前一交易日净值：从合并后的历史中取
   const latestConfirmedNav = latestFromHistory?.unitNav;
   const latestConfirmedNavDate = latestFromHistory?.date;
 
@@ -48,20 +65,35 @@ export function buildSnapshot(input: {
   const previousNav = previous?.unitNav;
   const previousNavDate = previous?.date;
 
-  const confirmedNav = input.marketStatus === 'nav_confirmed' ? latestConfirmedNav : undefined;
-  const confirmedNavDate = input.marketStatus === 'nav_confirmed' ? latestConfirmedNavDate : undefined;
   const estimatedNav = input.realtime?.estimatedNav;
+  const estimatedChangeRate = input.realtime?.estimatedChangeRate;
+  const isDomestic = marketType === 'domestic';
 
-  const displayNav =
-    input.marketStatus === 'nav_confirmed'
-      ? confirmedNav ?? latestConfirmedNav
-      : input.marketStatus === 'trading' || input.marketStatus === 'closed_pending_nav'
-        ? estimatedNav ?? latestConfirmedNav
-        : latestConfirmedNav;
+  // 按基金类型决定当前净值
+  let displayNav: number | undefined;
+  let confirmedNav: number | undefined;
+  let confirmedNavDate: string | undefined;
+
+  if (isDomestic) {
+    // A 股基金：按 A 股交易时段判断
+    confirmedNav = input.marketStatus === 'nav_confirmed' ? latestConfirmedNav : undefined;
+    confirmedNavDate = input.marketStatus === 'nav_confirmed' ? latestConfirmedNavDate : undefined;
+    displayNav =
+      input.marketStatus === 'nav_confirmed'
+        ? confirmedNav ?? latestConfirmedNav
+        : input.marketStatus === 'trading' || input.marketStatus === 'closed_pending_nav'
+          ? estimatedNav ?? latestConfirmedNav
+          : latestConfirmedNav;
+  } else {
+    // QDII/海外基金：不依赖 A 股交易时段
+    // 有估算净值就用估算，否则用最新确认净值
+    displayNav = isValidNumber(estimatedNav) ? estimatedNav : latestConfirmedNav;
+  }
 
   return {
     fundCode: input.fundCode,
     fundName: input.fundName,
+    marketType,
     previousNav,
     previousNavDate,
     latestConfirmedNav,
@@ -75,7 +107,7 @@ export function buildSnapshot(input: {
     estimatedNavDate: input.realtime?.estimateTime || '',
     estimateTime: input.realtime?.estimateTime,
     dailyChangeRate: input.latest?.dailyChangeRate,
-    intradayChangeRate: input.realtime?.estimatedChangeRate ?? 0,
+    intradayChangeRate: isValidNumber(estimatedChangeRate) ? estimatedChangeRate : 0,
     confirmedChangeRate: input.latest?.dailyChangeRate,
     marketStatus: input.marketStatus,
     dataSource: input.dataSource,

@@ -390,7 +390,7 @@ export default function PortfolioHoldingsTable({
                   {/* 数据状态 */}
                   <td className="px-4 py-3 text-center align-middle">
                     <div className="inline-flex flex-col items-center gap-[3px]">
-                      <NavStatusBadge status={row.snapshot?.marketStatus} />
+                      <NavStatusBadge status={row.snapshot?.marketStatus} marketType={row.snapshot?.marketType} />
                       <DataStatusBadge snapshot={row.snapshot} error={row.error} />
                       {row.error && <button type="button" onClick={() => onRetry?.(row.holding.fundCode)} className="text-[12px] text-blue-600 font-medium hover:text-blue-700 transition-colors">重试</button>}
                     </div>

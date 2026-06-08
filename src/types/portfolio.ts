@@ -52,9 +52,12 @@ export interface PortfolioHoldingInput {
   dcaPlan?: DcaPlan;
 }
 
+export type FundMarketType = 'domestic' | 'overseas' | 'unknown';
+
 export interface FundNavSnapshot {
   fundCode: string;
   fundName: string;
+  marketType?: FundMarketType;
   previousNav?: number;
   previousNavDate?: string;
   latestConfirmedNav?: number;

@@ -152,13 +152,13 @@ export function calculatePortfolioProfitLoss(
   const totalProfitLoss = marketValue === null ? null : calculateTotalProfitLoss(marketValue, holding.costAmount);
   const totalProfitLossRate = calculateTotalProfitLossRate(totalProfitLoss, holding.costAmount);
 
+  const isOverseas = navSnapshot?.marketType === 'overseas';
   const isTrading = navSnapshot?.marketStatus === 'trading' || navSnapshot?.marketStatus === 'closed_pending_nav';
   const isNonTrading = navSnapshot?.marketStatus === 'non_trading_day' || navSnapshot?.marketStatus === 'before_open';
   const previousNav = navSnapshot?.previousNav;
   const intradayRate = navSnapshot?.intradayChangeRate;
   const confirmedNav = navSnapshot?.confirmedNav ?? navSnapshot?.latestConfirmedNav;
 
-  // 校验前一交易日净值是否合理
   const previousNavValid = isNavReasonable(previousNav, displayNav);
 
   let dailyProfitLoss: number | null = null;
@@ -166,25 +166,34 @@ export function calculatePortfolioProfitLoss(
   let confirmedDailyProfitLoss: number | null = null;
   let confirmedDailyProfitLossRate: number | null = null;
 
-  if (!isNonTrading) {
-    // 交易中或闭市后
-    if (isTrading && intradayRate != null && intradayRate !== 0) {
-      // 交易中：优先使用实时涨跌幅
+  if (isOverseas) {
+    // QDII/海外基金：不依赖 A 股交易时段，有估算涨跌幅就用，否则用净值差
+    if (intradayRate != null && intradayRate !== 0) {
       dailyProfitLossRate = round4(intradayRate);
       if (marketValue != null) {
         dailyProfitLoss = round2(marketValue * intradayRate);
       }
     } else if (displayNav && previousNav && previousNavValid) {
-      // 闭市后或无实时数据：用净值差计算
       dailyProfitLoss = calculateDailyProfitLoss(holdingShares, displayNav, previousNav);
       dailyProfitLossRate = calculateDailyProfitLossRate(displayNav, previousNav);
     }
-
-    // 确认净值的日收益
-    if (confirmedNav && previousNav && previousNavValid) {
-      confirmedDailyProfitLoss = calculateConfirmedDailyProfitLoss(holdingShares, confirmedNav, previousNav);
-      confirmedDailyProfitLossRate = calculateDailyProfitLossRate(confirmedNav, previousNav);
+  } else if (!isNonTrading) {
+    // A 股基金：按 A 股交易时段判断
+    if (isTrading && intradayRate != null && intradayRate !== 0) {
+      dailyProfitLossRate = round4(intradayRate);
+      if (marketValue != null) {
+        dailyProfitLoss = round2(marketValue * intradayRate);
+      }
+    } else if (displayNav && previousNav && previousNavValid) {
+      dailyProfitLoss = calculateDailyProfitLoss(holdingShares, displayNav, previousNav);
+      dailyProfitLossRate = calculateDailyProfitLossRate(displayNav, previousNav);
     }
+  }
+
+  // 确认净值的日收益（仅 A 股基金在有确认净值时计算）
+  if (!isOverseas && confirmedNav && previousNav && previousNavValid) {
+    confirmedDailyProfitLoss = calculateConfirmedDailyProfitLoss(holdingShares, confirmedNav, previousNav);
+    confirmedDailyProfitLossRate = calculateDailyProfitLossRate(confirmedNav, previousNav);
   }
 
   const holdingDays = calculateHoldingDays(inferredFirstBuyDate || holding.firstBuyDate);
