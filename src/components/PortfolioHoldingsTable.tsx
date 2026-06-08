@@ -201,15 +201,22 @@ export default function PortfolioHoldingsTable({
 
       let navSource: string;
       let navDateRaw: string | undefined;
+      const hasEstimate = snapshot?.estimatedNav != null && snapshot.estimatedNav > 0;
+      const estTime = snapshot?.estimateTime || snapshot?.estimatedNavDate;
 
-      if (isOverseas && isTrading) {
-        const estTime = snapshot?.estimateTime || snapshot?.estimatedNavDate;
+      if (isOverseas && hasEstimate && estTime) {
+        // 海外基金：有估算净值和估算时间时，始终按海外市场交易日口径显示
         const label = formatOverseasEstimateLabel(snapshot!.marketType!, estTime);
         navSource = label.shortLabel;
-        navDateRaw = undefined; // date is embedded in shortLabel
-      } else if (isTrading) {
+        navDateRaw = undefined;
+      } else if (isOverseas && hasEstimate) {
+        // 海外基金有估算净值但无估算时间
+        navSource = `估算 ${snapshot!.marketType === 'qdii_us' ? '美股' : snapshot!.marketType === 'qdii_hk' ? '港股' : '海外'}市场`;
+        navDateRaw = undefined;
+      } else if (isTrading && !isOverseas) {
+        // A 股交易中
         navSource = '估算';
-        navDateRaw = snapshot?.estimateTime || snapshot?.estimatedNavDate || snapshot?.navDate;
+        navDateRaw = estTime || snapshot?.navDate;
       } else if (isConfirmed) {
         navSource = '确认';
         navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
