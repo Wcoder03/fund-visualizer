@@ -199,7 +199,7 @@ export default function PortfolioHoldingsTable({
       const navSource = isTrading ? '估算' : isConfirmed ? '确认' : '';
       const navDateRaw = isTrading
         ? (snapshot?.estimateTime || snapshot?.estimatedNavDate || snapshot?.navDate)
-        : (snapshot?.confirmedNavDate || snapshot?.navDate);
+        : (snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate);
 
       return {
         holding,

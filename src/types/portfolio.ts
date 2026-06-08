@@ -58,6 +58,7 @@ export interface FundNavSnapshot {
   previousNav?: number;
   previousNavDate?: string;
   latestConfirmedNav?: number;
+  latestConfirmedNavDate?: string;
   currentNav?: number;
   confirmedNav?: number;
   confirmedNavDate?: string;

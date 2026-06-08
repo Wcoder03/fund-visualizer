@@ -38,7 +38,7 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
   const firstBuyDate = profit.inferredFirstBuyDate || holding.firstBuyDate || '--';
   const items = [
     ['前一交易日净值', navWithDate(snapshot?.previousNav, snapshot?.previousNavDate)],
-    ['最新确认净值', navWithDate(snapshot?.latestConfirmedNav, snapshot?.confirmedNavDate)],
+    ['最新确认净值', navWithDate(snapshot?.latestConfirmedNav, snapshot?.latestConfirmedNavDate)],
     ['当日确认净值', navWithDate(snapshot?.confirmedNav, snapshot?.confirmedNavDate)],
     ['估算净值', navWithDate(snapshot?.estimatedNav, snapshot?.estimatedNavDate)],
     ['净值口径说明', navStatusNote(snapshot?.marketStatus)],

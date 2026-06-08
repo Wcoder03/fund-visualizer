@@ -23,11 +23,25 @@ export function buildSnapshot(input: {
   dataStatus: FundNavSnapshot['dataStatus'];
   message?: string;
 }): FundNavSnapshot {
-  const historyLen = input.history?.length ?? 0;
-  const previous = historyLen >= 2 ? input.history![historyLen - 2] : historyLen === 1 ? input.history![0] : undefined;
-  const latestConfirmedNav = input.latest?.latestNav ?? input.realtime?.latestConfirmedNav;
+  // 从历史净值中找最新确认净值（确保 value 和 date 来自同一条记录）
+  const validHistory = (input.history ?? []).filter(
+    (item) => item.date && item.unitNav != null && Number.isFinite(item.unitNav) && item.unitNav > 0
+  );
+
+  // 最新确认净值：历史列表最后一条（已按时间正序）
+  const latestFromHistory = validHistory.length > 0 ? validHistory[validHistory.length - 1] : undefined;
+
+  // 前一交易日净值：历史列表倒数第二条
+  const previous = validHistory.length >= 2 ? validHistory[validHistory.length - 2] : undefined;
+
+  // 最新确认净值：优先从 API latest 获取（value+date 绑定），其次从历史最后一条
+  const latestConfirmedNav = input.latest?.latestNav ?? latestFromHistory?.unitNav ?? input.realtime?.latestConfirmedNav;
+  const latestConfirmedNavDate = input.latest?.navDate ?? latestFromHistory?.date ?? undefined;
+
   const confirmedNav = input.marketStatus === 'nav_confirmed' ? latestConfirmedNav : undefined;
+  const confirmedNavDate = input.marketStatus === 'nav_confirmed' ? latestConfirmedNavDate : undefined;
   const estimatedNav = input.realtime?.estimatedNav;
+
   const displayNav =
     input.marketStatus === 'nav_confirmed'
       ? confirmedNav ?? latestConfirmedNav
@@ -41,11 +55,12 @@ export function buildSnapshot(input: {
     previousNav: previous?.unitNav ?? input.realtime?.previousNav,
     previousNavDate: previous?.date,
     latestConfirmedNav,
+    latestConfirmedNavDate,
     currentNav: displayNav,
     confirmedNav,
-    confirmedNavDate: input.latest?.navDate,
+    confirmedNavDate,
     displayNav,
-    navDate: input.latest?.navDate || input.realtime?.navDate || '',
+    navDate: latestConfirmedNavDate || input.realtime?.navDate || '',
     estimatedNav,
     estimatedNavDate: input.realtime?.estimateTime || '',
     estimateTime: input.realtime?.estimateTime,
