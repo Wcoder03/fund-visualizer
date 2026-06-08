@@ -39,6 +39,7 @@ interface RowModel {
   profit: PortfolioProfitLoss;
   displayNav?: number;
   navDate?: string;
+  navSource?: string;
   displayName: string;
 }
 
@@ -193,13 +194,21 @@ export default function PortfolioHoldingsTable({
     return holdings.map((holding) => {
       const snapshot = snapshotsByFundCode[holding.fundCode];
       const profit = calculatePortfolioProfitLoss(holding, snapshot);
+      const isTrading = snapshot?.marketStatus === 'trading' || snapshot?.marketStatus === 'closed_pending_nav';
+      const isConfirmed = snapshot?.marketStatus === 'nav_confirmed';
+      const navSource = isTrading ? '估算' : isConfirmed ? '确认' : '';
+      const navDateRaw = isTrading
+        ? (snapshot?.estimateTime || snapshot?.estimatedNavDate || snapshot?.navDate)
+        : (snapshot?.confirmedNavDate || snapshot?.navDate);
+
       return {
         holding,
         snapshot,
         error: errorsByFundCode[holding.fundCode],
         profit,
         displayNav: getDisplayNav(snapshot),
-        navDate: snapshot?.navDate || snapshot?.estimatedNavDate,
+        navDate: navDateRaw,
+        navSource,
         displayName: snapshot?.fundName || holding.fundName,
       };
     }).sort((a, b) => compareRows(a, b, sortField, sortDirection));
@@ -361,7 +370,10 @@ export default function PortfolioHoldingsTable({
                   {/* 当前净值 */}
                   <td className="px-4 py-3 align-middle">
                     <p className="whitespace-nowrap text-[15px] font-bold text-slate-900 leading-5 tabular-nums">{formatNav(row.displayNav)}</p>
-                    <p className="mt-0.5 whitespace-nowrap text-[12px] text-slate-400 leading-4">{row.navDate || '--'}</p>
+                    <p className="mt-0.5 whitespace-nowrap text-[12px] text-slate-400 leading-4">
+                      {row.navSource && <span className="mr-1 text-[11px] text-slate-400">{row.navSource}</span>}
+                      {row.navDate || '--'}
+                    </p>
                   </td>
                   {/* 当日收益 */}
                   <td className="px-4 py-3 align-middle">

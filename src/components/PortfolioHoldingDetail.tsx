@@ -27,14 +27,20 @@ function snapshotSourceText(snapshot?: FundNavSnapshot): string {
   return '数据来源';
 }
 
+function navWithDate(nav: number | undefined, date?: string): string {
+  const formatted = formatNav(nav);
+  if (formatted === '--') return '--';
+  return date ? `${formatted} (${date})` : formatted;
+}
+
 export default function PortfolioHoldingDetail({ holding, snapshot, error }: PortfolioHoldingDetailProps) {
   const profit = calculatePortfolioProfitLoss(holding, snapshot);
   const firstBuyDate = profit.inferredFirstBuyDate || holding.firstBuyDate || '--';
   const items = [
-    ['前一交易日净值', formatNav(snapshot?.previousNav)],
-    ['最新确认净值', formatNav(snapshot?.latestConfirmedNav)],
-    ['当日确认净值', formatNav(snapshot?.confirmedNav)],
-    ['估算净值', formatNav(snapshot?.estimatedNav)],
+    ['前一交易日净值', navWithDate(snapshot?.previousNav, snapshot?.previousNavDate)],
+    ['最新确认净值', navWithDate(snapshot?.latestConfirmedNav, snapshot?.confirmedNavDate)],
+    ['当日确认净值', navWithDate(snapshot?.confirmedNav, snapshot?.confirmedNavDate)],
+    ['估算净值', navWithDate(snapshot?.estimatedNav, snapshot?.estimatedNavDate)],
     ['净值口径说明', navStatusNote(snapshot?.marketStatus)],
     ['首次买入日期', `${firstBuyDate}${profit.inferredFirstBuyDate ? ' · 推算' : ''}`],
     ['成本净值', formatNav(profit.inferredCostNav)],
