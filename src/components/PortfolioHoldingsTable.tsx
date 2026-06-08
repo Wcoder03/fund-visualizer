@@ -7,7 +7,6 @@ import ProfitLossValue from './ProfitLossValue';
 import { calculateNextDcaDate, calculatePortfolioProfitLoss } from '../lib/portfolioCalculator';
 import { getDisplayNav } from '../lib/marketStatus';
 import { formatMoney, formatNav, formatNumber } from '../lib/portfolioFormatters';
-import { formatOverseasEstimateLabel } from '../lib/navStatusText';
 import type { DcaFrequency, FundNavSnapshot, PortfolioHolding, PortfolioProfitLoss } from '../types/portfolio';
 
 export type SortField =
@@ -205,22 +204,14 @@ export default function PortfolioHoldingsTable({
       const estTime = snapshot?.estimateTime || snapshot?.estimatedNavDate;
 
       if (isConfirmed) {
-        // 当日确认净值已发布
         navSource = '确认';
         navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
-      } else if (isOverseas && hasEstimate && estTime) {
-        // 海外基金：有估算净值和估算时间时，按海外市场交易日口径显示
-        const label = formatOverseasEstimateLabel(snapshot!.marketType!, estTime);
-        navSource = label.shortLabel;
-        navDateRaw = undefined;
+      } else if (hasEstimate && estTime) {
+        navSource = isOverseas ? '估算' : '估算';
+        navDateRaw = estTime;
       } else if (isOverseas && hasEstimate) {
-        // 海外基金有估算净值但无估算时间
-        navSource = `估算 ${snapshot!.marketType === 'qdii_us' ? '美股' : snapshot!.marketType === 'qdii_hk' ? '港股' : '海外'}市场`;
-        navDateRaw = undefined;
-      } else if (isTrading && !isOverseas) {
-        // A 股交易中
         navSource = '估算';
-        navDateRaw = estTime || snapshot?.navDate;
+        navDateRaw = undefined;
       } else {
         navSource = '';
         navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;

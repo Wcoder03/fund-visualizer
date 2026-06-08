@@ -1,8 +1,7 @@
 import DataStatusBadge from './DataStatusBadge';
 import NavStatusBadge from './NavStatusBadge';
 import { calculatePortfolioProfitLoss } from '../lib/portfolioCalculator';
-import { navStatusNote, formatOverseasEstimateLabel } from '../lib/navStatusText';
-import { isOverseasFund } from '../lib/fundDataNormalizer';
+import { navStatusNote } from '../lib/navStatusText';
 import { formatMoney, formatNav } from '../lib/portfolioFormatters';
 import type { FundNavSnapshot, PortfolioHolding } from '../types/portfolio';
 
@@ -44,15 +43,6 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
   const firstBuyDate = profit.inferredFirstBuyDate || holding.firstBuyDate || '--';
   const showPrevious = !isSameNav(snapshot?.previousNav, snapshot?.latestConfirmedNav);
 
-  // 海外基金估算净值显示完整海外交易日信息
-  const isOverseas = isOverseasFund(snapshot?.marketType);
-  const estimateLabel = isOverseas
-    ? formatOverseasEstimateLabel(snapshot!.marketType!, snapshot?.estimateTime || snapshot?.estimatedNavDate)
-    : null;
-  const estimateDisplay = isOverseas && snapshot?.estimatedNav
-    ? `${formatNav(snapshot.estimatedNav)} · ${estimateLabel?.shortLabel || '海外估算'}`
-    : navWithDate(snapshot?.estimatedNav, snapshot?.estimatedNavDate);
-
   const items: [string, string][] = [];
   if (showPrevious) {
     items.push(['前一确认净值', navWithDate(snapshot?.previousNav, snapshot?.previousNavDate)]);
@@ -60,7 +50,7 @@ export default function PortfolioHoldingDetail({ holding, snapshot, error }: Por
   items.push(
     ['最新确认净值', navWithDate(snapshot?.latestConfirmedNav, snapshot?.latestConfirmedNavDate)],
     ['当日确认净值', navWithDate(snapshot?.confirmedNav, snapshot?.confirmedNavDate)],
-    ['估算净值', estimateDisplay],
+    ['估算净值', navWithDate(snapshot?.estimatedNav, snapshot?.estimateTime || snapshot?.estimatedNavDate)],
     ['净值口径说明', navStatusNote(snapshot?.marketStatus, snapshot?.marketType)],
     ['首次买入日期', `${firstBuyDate}${profit.inferredFirstBuyDate ? ' · 推算' : ''}`],
     ['成本净值', formatNav(profit.inferredCostNav)],
