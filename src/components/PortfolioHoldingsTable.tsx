@@ -204,8 +204,12 @@ export default function PortfolioHoldingsTable({
       const hasEstimate = snapshot?.estimatedNav != null && snapshot.estimatedNav > 0;
       const estTime = snapshot?.estimateTime || snapshot?.estimatedNavDate;
 
-      if (isOverseas && hasEstimate && estTime) {
-        // 海外基金：有估算净值和估算时间时，始终按海外市场交易日口径显示
+      if (isConfirmed) {
+        // 当日确认净值已发布
+        navSource = '确认';
+        navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
+      } else if (isOverseas && hasEstimate && estTime) {
+        // 海外基金：有估算净值和估算时间时，按海外市场交易日口径显示
         const label = formatOverseasEstimateLabel(snapshot!.marketType!, estTime);
         navSource = label.shortLabel;
         navDateRaw = undefined;
@@ -217,9 +221,6 @@ export default function PortfolioHoldingsTable({
         // A 股交易中
         navSource = '估算';
         navDateRaw = estTime || snapshot?.navDate;
-      } else if (isConfirmed) {
-        navSource = '确认';
-        navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
       } else {
         navSource = '';
         navDateRaw = snapshot?.latestConfirmedNavDate || snapshot?.confirmedNavDate || snapshot?.navDate;
@@ -394,10 +395,11 @@ export default function PortfolioHoldingsTable({
                   {/* 当前净值 */}
                   <td className="px-4 py-3 align-middle">
                     <p className="whitespace-nowrap text-[15px] font-bold text-slate-900 leading-5 tabular-nums">{formatNav(row.displayNav)}</p>
-                    <p className="mt-0.5 whitespace-nowrap text-[12px] text-slate-400 leading-4">
-                      {row.navSource && <span className="mr-1 text-[11px] text-slate-400">{row.navSource}</span>}
-                      {row.navDate || '--'}
-                    </p>
+                    {row.navSource && (
+                      <p className="mt-0.5 whitespace-nowrap text-[12px] text-slate-400 leading-4">
+                        {row.navSource}{row.navDate ? ` ${row.navDate}` : ''}
+                      </p>
+                    )}
                   </td>
                   {/* 当日收益 */}
                   <td className="px-4 py-3 align-middle">
