@@ -30,12 +30,16 @@ export function calculateTotalProfitLossRate(totalProfitLoss: number | null, cos
 
 export function calculateDailyProfitLoss(holdingShares: number, currentNav?: number, previousNav?: number): number | null {
   if (!currentNav || !previousNav || currentNav <= 0 || previousNav <= 0) return null;
-  return round2(holdingShares * currentNav - holdingShares * previousNav);
+  const rate = Math.abs((currentNav - previousNav) / previousNav);
+  if (rate > 0.2) return null; // 日涨跌幅超过20%视为数据异常
+  return round2(holdingShares * (currentNav - previousNav));
 }
 
 export function calculateDailyProfitLossRate(currentNav?: number, previousNav?: number): number | null {
   if (!currentNav || !previousNav || previousNav <= 0) return null;
-  return round4(currentNav / previousNav - 1);
+  const rate = (currentNav - previousNav) / previousNav;
+  if (Math.abs(rate) > 0.2) return null; // 日涨跌幅超过20%视为数据异常
+  return round4(rate);
 }
 
 export function calculateConfirmedDailyProfitLoss(
@@ -44,6 +48,12 @@ export function calculateConfirmedDailyProfitLoss(
   previousNav?: number
 ): number | null {
   return calculateDailyProfitLoss(holdingShares, confirmedNav, previousNav);
+}
+
+function isNavReasonable(nav?: number, reference?: number): boolean {
+  if (!nav || nav <= 0) return false;
+  if (!reference || reference <= 0) return true;
+  return Math.abs(nav - reference) / reference < 0.2;
 }
 
 export function calculateHoldingDays(firstBuyDate: string, today = new Date()): number {
@@ -141,12 +151,42 @@ export function calculatePortfolioProfitLoss(
   const marketValue = displayNav && holdingShares > 0 ? calculateMarketValue(holdingShares, displayNav) : null;
   const totalProfitLoss = marketValue === null ? null : calculateTotalProfitLoss(marketValue, holding.costAmount);
   const totalProfitLossRate = calculateTotalProfitLossRate(totalProfitLoss, holding.costAmount);
-  const shouldCalculateDaily = navSnapshot?.marketStatus !== 'before_open' && navSnapshot?.marketStatus !== 'non_trading_day';
-  const dailyProfitLoss = shouldCalculateDaily ? calculateDailyProfitLoss(holdingShares, displayNav, navSnapshot?.previousNav) : null;
-  const dailyProfitLossRate = shouldCalculateDaily ? calculateDailyProfitLossRate(displayNav, navSnapshot?.previousNav) : null;
+
+  const isTrading = navSnapshot?.marketStatus === 'trading' || navSnapshot?.marketStatus === 'closed_pending_nav';
+  const isNonTrading = navSnapshot?.marketStatus === 'non_trading_day' || navSnapshot?.marketStatus === 'before_open';
+  const previousNav = navSnapshot?.previousNav;
+  const intradayRate = navSnapshot?.intradayChangeRate;
   const confirmedNav = navSnapshot?.confirmedNav ?? navSnapshot?.latestConfirmedNav;
-  const confirmedDailyProfitLoss = shouldCalculateDaily ? calculateConfirmedDailyProfitLoss(holdingShares, confirmedNav, navSnapshot?.previousNav) : null;
-  const confirmedDailyProfitLossRate = shouldCalculateDaily ? calculateDailyProfitLossRate(confirmedNav, navSnapshot?.previousNav) : null;
+
+  // 校验前一交易日净值是否合理
+  const previousNavValid = isNavReasonable(previousNav, displayNav);
+
+  let dailyProfitLoss: number | null = null;
+  let dailyProfitLossRate: number | null = null;
+  let confirmedDailyProfitLoss: number | null = null;
+  let confirmedDailyProfitLossRate: number | null = null;
+
+  if (!isNonTrading) {
+    // 交易中或闭市后
+    if (isTrading && intradayRate != null && intradayRate !== 0) {
+      // 交易中：优先使用实时涨跌幅
+      dailyProfitLossRate = round4(intradayRate);
+      if (marketValue != null) {
+        dailyProfitLoss = round2(marketValue * intradayRate);
+      }
+    } else if (displayNav && previousNav && previousNavValid) {
+      // 闭市后或无实时数据：用净值差计算
+      dailyProfitLoss = calculateDailyProfitLoss(holdingShares, displayNav, previousNav);
+      dailyProfitLossRate = calculateDailyProfitLossRate(displayNav, previousNav);
+    }
+
+    // 确认净值的日收益
+    if (confirmedNav && previousNav && previousNavValid) {
+      confirmedDailyProfitLoss = calculateConfirmedDailyProfitLoss(holdingShares, confirmedNav, previousNav);
+      confirmedDailyProfitLossRate = calculateDailyProfitLossRate(confirmedNav, previousNav);
+    }
+  }
+
   const holdingDays = calculateHoldingDays(inferredFirstBuyDate || holding.firstBuyDate);
 
   return {

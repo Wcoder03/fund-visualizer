@@ -16,10 +16,10 @@ function snapshot(status: MarketStatus, patch: Partial<FundNavSnapshot> = {}): F
   return {
     fundCode: '001',
     fundName: '测试基金',
-    previousNav: 1,
-    latestConfirmedNav: 1.1,
-    confirmedNav: 1.2,
-    estimatedNav: 1.3,
+    previousNav: 1.0,
+    latestConfirmedNav: 1.01,
+    confirmedNav: 1.02,
+    estimatedNav: 1.03,
     navDate: '2026-06-05',
     estimatedNavDate: '2026-06-05',
     intradayChangeRate: 0,
@@ -72,30 +72,30 @@ describe('portfolioCalculator', () => {
   });
 
   it('selects displayNav by market status', () => {
-    expect(getDisplayNav(snapshot('nav_confirmed'))).toBe(1.2);
-    expect(getDisplayNav(snapshot('trading'))).toBe(1.3);
-    expect(getDisplayNav(snapshot('closed_pending_nav'))).toBe(1.3);
-    expect(getDisplayNav(snapshot('before_open'))).toBe(1.1);
-    expect(getDisplayNav(snapshot('non_trading_day'))).toBe(1.1);
+    expect(getDisplayNav(snapshot('nav_confirmed'))).toBe(1.02);
+    expect(getDisplayNav(snapshot('trading'))).toBe(1.03);
+    expect(getDisplayNav(snapshot('closed_pending_nav'))).toBe(1.03);
+    expect(getDisplayNav(snapshot('before_open'))).toBe(1.01);
+    expect(getDisplayNav(snapshot('non_trading_day'))).toBe(1.01);
   });
 
   it('calculates trading daily profit loss', () => {
     const result = calculatePortfolioProfitLoss(holding, snapshot('trading'));
-    expect(result.marketValue).toBe(1300);
-    expect(result.dailyProfitLoss).toBe(300);
-    expect(result.dailyProfitLossRate).toBe(0.3);
+    expect(result.marketValue).toBe(1030);
+    expect(result.dailyProfitLoss).toBe(30);
+    expect(result.dailyProfitLossRate).toBe(0.03);
   });
 
   it('calculates closed pending daily profit loss', () => {
     const result = calculatePortfolioProfitLoss(holding, snapshot('closed_pending_nav'));
-    expect(result.dailyProfitLoss).toBe(300);
-    expect(result.dailyProfitLossRate).toBe(0.3);
+    expect(result.dailyProfitLoss).toBe(30);
+    expect(result.dailyProfitLossRate).toBe(0.03);
   });
 
   it('calculates confirmed daily profit loss', () => {
     const result = calculatePortfolioProfitLoss(holding, snapshot('nav_confirmed'));
-    expect(result.confirmedDailyProfitLoss).toBe(200);
-    expect(result.confirmedDailyProfitLossRate).toBe(0.2);
+    expect(result.confirmedDailyProfitLoss).toBe(20);
+    expect(result.confirmedDailyProfitLossRate).toBe(0.02);
   });
 
   it('does not calculate daily profit without previous nav', () => {
@@ -112,10 +112,10 @@ describe('portfolioCalculator', () => {
   });
 
   it('estimates shares from holding amount and displayNav', () => {
-    const result = calculatePortfolioProfitLoss({ ...holding, holdingShares: undefined, holdingAmount: 1300 }, snapshot('trading'));
+    const result = calculatePortfolioProfitLoss({ ...holding, holdingShares: undefined, holdingAmount: 1030 }, snapshot('trading'));
     expect(result.calculatedHoldingShares).toBe(1000);
     expect(result.sharesEstimated).toBe(true);
-    expect(result.marketValue).toBe(1300);
+    expect(result.marketValue).toBe(1030);
   });
 
   it('infers first buy date from the nearest cost nav in history', () => {
@@ -130,16 +130,16 @@ describe('portfolioCalculator', () => {
     const result = calculatePortfolioProfitLoss({
       ...holding,
       holdingShares: undefined,
-      holdingAmount: 1300,
-      costAmount: 1290,
+      holdingAmount: 1030,
+      costAmount: 1000,
       firstBuyDate: '2026-06-06',
     }, snapshot('trading', {
       navHistory: [
-        { date: '2026-05-01', unitNav: 1.29 },
-        { date: '2026-06-05', unitNav: 1.3 },
+        { date: '2026-05-01', unitNav: 1.0 },
+        { date: '2026-06-05', unitNav: 1.03 },
       ],
     }));
-    expect(result.inferredCostNav).toBe(1.29);
+    expect(result.inferredCostNav).toBe(1.0);
     expect(result.inferredFirstBuyDate).toBe('2026-05-01');
     expect(result.holdingDays).toBeGreaterThan(0);
   });
