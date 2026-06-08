@@ -23,7 +23,8 @@ export function buildSnapshot(input: {
   dataStatus: FundNavSnapshot['dataStatus'];
   message?: string;
 }): FundNavSnapshot {
-  const previous = input.history?.[1] ?? input.history?.[0];
+  const historyLen = input.history?.length ?? 0;
+  const previous = historyLen >= 2 ? input.history![historyLen - 2] : historyLen === 1 ? input.history![0] : undefined;
   const latestConfirmedNav = input.latest?.latestNav ?? input.realtime?.latestConfirmedNav;
   const confirmedNav = input.marketStatus === 'nav_confirmed' ? latestConfirmedNav : undefined;
   const estimatedNav = input.realtime?.estimatedNav;
