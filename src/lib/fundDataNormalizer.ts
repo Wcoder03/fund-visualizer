@@ -23,46 +23,30 @@ export function buildSnapshot(input: {
   dataStatus: FundNavSnapshot['dataStatus'];
   message?: string;
 }): FundNavSnapshot {
-  // 从历史净值中找最新确认净值（确保 value 和 date 来自同一条记录）
-  const validHistory = (input.history ?? []).filter(
+  // 从历史净值中提取有效记录
+  let validHistory = (input.history ?? []).filter(
     (item) => item.date && item.unitNav != null && Number.isFinite(item.unitNav) && item.unitNav > 0
   );
 
-  // 最新确认净值：历史列表最后一条（已按时间正序）
-  const latestFromHistory = validHistory.length > 0 ? validHistory[validHistory.length - 1] : undefined;
-
-  // 前一交易日净值：历史列表倒数第二条
-  const previous = validHistory.length >= 2 ? validHistory[validHistory.length - 2] : undefined;
-
-  // 最新确认净值：优先从 realtime API 的 dwjz+jzrq 获取（最准确的确认净值+日期）
+  // 如果实时 API 有更新的确认净值，追加到历史中（修复历史数据滞后问题）
   const rtNav = input.realtime?.latestConfirmedNav;
   const rtDate = input.realtime?.navDate;
-  const latestNav = input.latest?.latestNav;
-  const latestDate = input.latest?.navDate;
-
-  // 选择日期最新的来源
-  let latestConfirmedNav: number | undefined;
-  let latestConfirmedNavDate: string | undefined;
-
-  if (rtNav && rtDate && latestNav && latestDate) {
-    // 两个来源都有数据，选日期更新的
-    if (rtDate >= latestDate) {
-      latestConfirmedNav = rtNav;
-      latestConfirmedNavDate = rtDate;
-    } else {
-      latestConfirmedNav = latestNav;
-      latestConfirmedNavDate = latestDate;
+  if (rtNav && rtDate && rtNav > 0) {
+    const lastHistoryDate = validHistory.length > 0 ? validHistory[validHistory.length - 1].date : '';
+    if (!lastHistoryDate || rtDate > lastHistoryDate) {
+      validHistory = [...validHistory, { date: rtDate, unitNav: rtNav, dataSource: 'eastmoney' as const }];
     }
-  } else if (rtNav && rtDate) {
-    latestConfirmedNav = rtNav;
-    latestConfirmedNavDate = rtDate;
-  } else if (latestNav && latestDate) {
-    latestConfirmedNav = latestNav;
-    latestConfirmedNavDate = latestDate;
-  } else {
-    latestConfirmedNav = latestFromHistory?.unitNav;
-    latestConfirmedNavDate = latestFromHistory?.date;
   }
+
+  const latestFromHistory = validHistory.length > 0 ? validHistory[validHistory.length - 1] : undefined;
+
+  // 最新确认净值和前一交易日净值：从合并后的历史中取
+  const latestConfirmedNav = latestFromHistory?.unitNav;
+  const latestConfirmedNavDate = latestFromHistory?.date;
+
+  const previous = validHistory.length >= 2 ? validHistory[validHistory.length - 2] : undefined;
+  const previousNav = previous?.unitNav;
+  const previousNavDate = previous?.date;
 
   const confirmedNav = input.marketStatus === 'nav_confirmed' ? latestConfirmedNav : undefined;
   const confirmedNavDate = input.marketStatus === 'nav_confirmed' ? latestConfirmedNavDate : undefined;
@@ -78,8 +62,8 @@ export function buildSnapshot(input: {
   return {
     fundCode: input.fundCode,
     fundName: input.fundName,
-    previousNav: previous?.unitNav ?? input.realtime?.previousNav,
-    previousNavDate: previous?.date,
+    previousNav,
+    previousNavDate,
     latestConfirmedNav,
     latestConfirmedNavDate,
     currentNav: displayNav,
