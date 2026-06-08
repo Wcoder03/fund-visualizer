@@ -34,9 +34,35 @@ export function buildSnapshot(input: {
   // 前一交易日净值：历史列表倒数第二条
   const previous = validHistory.length >= 2 ? validHistory[validHistory.length - 2] : undefined;
 
-  // 最新确认净值：优先从 API latest 获取（value+date 绑定），其次从历史最后一条
-  const latestConfirmedNav = input.latest?.latestNav ?? latestFromHistory?.unitNav ?? input.realtime?.latestConfirmedNav;
-  const latestConfirmedNavDate = input.latest?.navDate ?? latestFromHistory?.date ?? undefined;
+  // 最新确认净值：优先从 realtime API 的 dwjz+jzrq 获取（最准确的确认净值+日期）
+  const rtNav = input.realtime?.latestConfirmedNav;
+  const rtDate = input.realtime?.navDate;
+  const latestNav = input.latest?.latestNav;
+  const latestDate = input.latest?.navDate;
+
+  // 选择日期最新的来源
+  let latestConfirmedNav: number | undefined;
+  let latestConfirmedNavDate: string | undefined;
+
+  if (rtNav && rtDate && latestNav && latestDate) {
+    // 两个来源都有数据，选日期更新的
+    if (rtDate >= latestDate) {
+      latestConfirmedNav = rtNav;
+      latestConfirmedNavDate = rtDate;
+    } else {
+      latestConfirmedNav = latestNav;
+      latestConfirmedNavDate = latestDate;
+    }
+  } else if (rtNav && rtDate) {
+    latestConfirmedNav = rtNav;
+    latestConfirmedNavDate = rtDate;
+  } else if (latestNav && latestDate) {
+    latestConfirmedNav = latestNav;
+    latestConfirmedNavDate = latestDate;
+  } else {
+    latestConfirmedNav = latestFromHistory?.unitNav;
+    latestConfirmedNavDate = latestFromHistory?.date;
+  }
 
   const confirmedNav = input.marketStatus === 'nav_confirmed' ? latestConfirmedNav : undefined;
   const confirmedNavDate = input.marketStatus === 'nav_confirmed' ? latestConfirmedNavDate : undefined;
